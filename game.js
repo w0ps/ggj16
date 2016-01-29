@@ -53,8 +53,8 @@ function assignGamePrototypeMethods() {
 function tick() {
 	var updateInfo = {};
 
-	this.playerKeys.forEach( _.partial( tickPlayer, _, this.players );
-	this.playerKeys.forEach( _.partial( cleanupPlayer, _, this.players, updateInfo );
+	this.playerKeys.forEach( _.partial( tickPlayer, _, this.players ) );
+	this.playerKeys.forEach( _.partial( cleanupPlayer, _, this.players, updateInfo ) );
 }
 
 function tickPlayer( playerId, players ) {
