@@ -53,46 +53,46 @@ function assignGamePrototypeMethods() {
 function tick() {
 	var updateInfo = {};
 
-	this.playerKeys.forEach( tickPlayer );
-	this.playerKeys.forEach( cleanupPlayer );
+	this.playerKeys.forEach( _.partial( tickPlayer, _, this.players );
+	this.playerKeys.forEach( _.partial( cleanupPlayer, _, this.players, updateInfo );
+}
 
-	function tickPlayer( playerId ) {
-		var player = this.players[ playerId ],
-				mobs = player.mobs,
-				fieldResources = player.fieldResources,
-				enemies = player.opponent.mobs;
+function tickPlayer( playerId, players ) {
+	var player = players[ playerId ],
+			mobs = player.mobs,
+			fieldResources = player.fieldResources,
+			enemies = player.opponent.mobs;
 
-		mobs.forEach( _.partial( mobTick, _, this, player, enemies, fieldResources, player.opponent ) );
+	mobs.forEach( _.partial( mobTick, _, this, player, enemies, fieldResources, player.opponent ) );
+}
+
+function cleanupPlayer( playerId, players, updateInfo ) {
+	var player = players[ playerId ],
+			mobs = player.mobs,
+			mob, info, i = 1;
+
+	info = updateInfo[ playerId ] = {
+		died: [],
+		damaged: [],
+		fighting: []
+	};
+	
+	while( mobs[ mobs.length - 1 ].dead ) {
+		mob = mobs.pop();
+		player.opponent.resources[ 2 ] += mobStats[ mob.type ].value;
+		info.died.push( { id: mob.id } );
 	}
 
-	function cleanupPlayer( playerId ) {
-		var player = this.players[ playerId ],
-				mobs = player.mobs,
-				mob, info, i = 1;
+	while( mobs[ mobs.length - i ].damage ) {
+		mob = mobs[ mobs.length - i ];
+		info.damaged.push( { id: mob.id, damage: mob.damage } );
+		++i;
+	}
 
-		info = updateInfo[ playerId ] = {
-			died: [],
-			damaged: [],
-			fighting: []
-		};
-		
-		while( mobs[ mobs.length - 1 ].dead ) {
-			mob = mobs.pop();
-			player.opponent.resources[ 2 ] += mobStats[ mob.type ].value;
-			info.died.push( { id: mob.id } );
-		}
-
-		while( mobs[ mobs.length - i ].damage ) {
-			mob = mobs[ mobs.length - i ];
-			info.damaged.push( { id: mob.id, damage: mob.damage } );
-			++i;
-		}
-
-		i = 0;
-		while( !mobs[ mobs.length - i ].moving ) {
-			info.fighting.push( { id: mob.id } );
-			++i;
-		}
+	i = 0;
+	while( !mobs[ mobs.length - i ].moving ) {
+		info.fighting.push( { id: mob.id } );
+		++i;
 	}
 }
 
