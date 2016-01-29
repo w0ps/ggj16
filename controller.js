@@ -1,10 +1,15 @@
 var express = require( 'express' ),
-		app = express();
+		app = express(),
+		games = require( './game' ),
+		io;
 
-app.get( '/:lobbyId', showController );
+var games = require('./game' );
+
+app.get( '/:gameId', showController );
 
 function showController( req, res, next ) {
-	res.render( 'controller-lobby', { lobbyId: req.params.lobbyId } );
+	var game = games.getGame( req.params.gameId );
+	res.render( 'controller', { gameId: req.params.gameId } );
 }
 
 module.exports = {
