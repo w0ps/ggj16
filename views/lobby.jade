@@ -1,0 +1,16 @@
+extends main
+
+append header
+	script( src='/js/lobby.js' )
+	script
+		!= "var lobbyId = '" + lobbyId + "';"
+
+block content
+	p welcome to the lobby
+	table#players
+		thead
+			tr
+				td name
+				td joined
+		tbody
+	#qrcode

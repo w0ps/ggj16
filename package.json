@@ -1,0 +1,26 @@
+{
+  "name": "ggj16",
+  "version": "1.0.0",
+  "description": "global game jam 2016 game",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/w0ps/ggj16.git"
+  },
+  "author": "= <=> (=)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/w0ps/ggj16/issues"
+  },
+  "homepage": "https://github.com/w0ps/ggj16",
+  "dependencies": {
+    "express": "^4.13.4",
+    "jade": "^1.11.0",
+    "morgan": "^1.6.1",
+    "socket.io": "^1.4.5",
+    "static-favicon": "^1.0.2"
+  }
+}

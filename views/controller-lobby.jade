@@ -1,0 +1,9 @@
+extends mobile
+
+append header
+	script( src='/js/lobby-mobile.js' )
+	script
+		!= "var lobbyId = '" + lobbyId + "';"
+
+block content
+	p welcome

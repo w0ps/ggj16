@@ -1,0 +1,10 @@
+extends root
+
+append header
+	script( src="/socket.io/socket.io.js" )
+	script( src="/js/lib/qrcode.min.js" )
+block layout
+	#wrap
+		include header
+		#content
+			block content
