@@ -14,6 +14,10 @@ function init() {
   var socket = io( '/' + gameId );
 
   socket.emit( 'screen joined' );
+
+  socket.on( 'player joined', function( name ) {
+    console.log( 'player joined: ', name);
+  } );
 }
 
 document.addEventListener( 'DOMContentLoaded', init );
