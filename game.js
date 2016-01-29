@@ -1,6 +1,17 @@
 var express = require( 'express' ),
 		app = express(),
+		_ = require( 'underscore' ),
 		io;
+
+var mobStats = [
+			{ // first mob type
+				speed: 2,
+				strength: 0.5,
+				health: 1,
+				range: 1,
+				value: 1
+			}
+		];
 
 var Player = require( './player' );
 
@@ -36,10 +47,91 @@ assignGamePrototypeMethods.call( Game.prototype );
 function assignGamePrototypeMethods() {
 	this.join = joinGame;
 	this.addScreen = addScreen;
+	this.tick = tick;
+}
+
+function tick() {
+	var updateInfo = {};
+
+	this.playerKeys.forEach( tickPlayer );
+	this.playerKeys.forEach( cleanupPlayer );
+
+	function tickPlayer( playerId ) {
+		var player = this.players[ playerId ],
+				mobs = player.mobs,
+				fieldResources = player.fieldResources,
+				enemies = player.opponent.mobs;
+
+		mobs.forEach( _.partial( mobTick, _, this, player, enemies, fieldResources, player.opponent ) );
+	}
+
+	function cleanupPlayer( playerId ) {
+		var player = this.players[ playerId ],
+				mobs = player.mobs,
+				mob, info, i = 1;
+
+		info = updateInfo[ playerId ] = {
+			died: [],
+			damaged: [],
+			fighting: []
+		};
+		
+		while( mobs[ mobs.length - 1 ].dead ) {
+			mob = mobs.pop();
+			player.opponent.resources[ 2 ] += mobStats[ mob.type ].value;
+			info.died.push( { id: mob.id } );
+		}
+
+		while( mobs[ mobs.length - i ].damage ) {
+			mob = mobs[ mobs.length - i ];
+			info.damaged.push( { id: mob.id, damage: mob.damage } );
+			++i;
+		}
+
+		i = 0;
+		while( !mobs[ mobs.length - i ].moving ) {
+			info.fighting.push( { id: mob.id } );
+			++i;
+		}
+	}
+}
+
+function mobTick( mob, game, player, enemies, fieldResources, opponent ) {
+	var stats = mobStats[ mob.type ],
+			range = stats.range,
+			mobPosition = mob.position,
+			closestEnemy = enemies[ enemies.length - 1 ],
+			closestEnemyPosition = closestEnemy ? closestEnemy.position : null,
+			closestEnemyDistance = closestEnemyPosition ? Math.abs( mobPosition - closestEnemyPosition ) : null,
+			closestResource = resources[ 0 ],
+			closestResourceDistance = closestResource ? Math.abs( mobPosition - closestResource.position ) : null;
+
+	mob.moving = false;
+
+	if( closestEnemyDistance <= range ) {
+		closestEnemy.damage += stats.strength * player.strengthModifier;
+		if( closestEnemy.damage >= mobStats[ closestEnemy.type ].health ) closestEnemy.dead = true;
+	}
+	else if( closestResourceDistance <= range ) {
+		closestResource.damage += stats.strength * player.strengthModifier;
+		if( closestResource.damage >= resourceStats[ resource.type ].health ) resource.dead = true;
+	}
+	else {
+		mob.moving = true;
+		mob.position = stats.speed * player.speedModifier * player.direction;
+	}
 }
 
 function joinGame( socket, name ) {
-	var player = this.players[ socket.id ] = new Player( this, socket, name );
+	var player = this.players[ socket.id ] = new Player( this, socket, name ),
+			opponent;
+	this.playerKeys = Object.keys( this.players );
+	
+	if( this.playerKeys.length === 2 ) {
+		player.opponent = opponent = this.players[ this.playerKeys[ 0 ] ];
+		opponent.opponent = player;
+	}
+
 	this.room.emit( 'player joined', player.name );
 }
 

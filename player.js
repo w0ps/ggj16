@@ -3,11 +3,13 @@ var playerLifeCount = 100,
 
 function Player( game, socket, name ) {
 	console.log( 'creating player' );
+	this.mobs = [];
 	this.game = game;
 	this.socket = socket;
 	this.name = name;
 	this.life = playerLifeCount;
 	this.resources = startingResources.slice();
+	this.fieldResources = [];
 }
 
 assignPlayerPrototypeMethods.call( Player.prototype );
