@@ -1,5 +1,6 @@
 var express = require( 'express' ),
-		app = express();
+		app = express(),
+		io;
 
 app.get( '/:lobbyId', showController );
 
@@ -8,5 +9,18 @@ function showController( req, res, next ) {
 }
 
 module.exports = {
-	app: app
+	app: app,
+	setIO: function( _io ) {
+		io = _io;
+		declareSocketHandlers();
+	}
 };
+
+
+function declareSocketHandlers(){
+	console.log( 'declaring socket io handlers' );
+	
+	io.on( 'controller join lobby', function( roomId ){
+		console.log( 'controller joined lobby', arguments );
+	} );
+}

@@ -83,7 +83,16 @@ var server = app.listen( webPort ),
 
 io.on( 'connection', function( socket ) {
   console.log( 'a user connected' );
+  socket.emit( 'hoi' );
 } );
+
+io.on( 'controller joins lobby', function( roomId ){
+	console.log( 'controller joined lobby', arguments );
+} );
+
+io.on( 'asd', console.log.bind(console, 'asd'));
+
+controller.setIO( io );
 
 function showLobby( req, res, next ) {
 	var id = shortId();
