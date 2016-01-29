@@ -1,0 +1,9 @@
+extends mobile
+
+append header
+	script( src='/js/controller.js' )
+	script
+		!= "var gameId = '" + gameId + "';"
+
+block content
+	p welcome

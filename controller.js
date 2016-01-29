@@ -1,26 +1,17 @@
 var express = require( 'express' ),
 		app = express(),
+		games = require( './game' ),
 		io;
 
-app.get( '/:lobbyId', showController );
+var games = require('./game' );
+
+app.get( '/:gameId', showController );
 
 function showController( req, res, next ) {
-	res.render( 'controller-lobby', { lobbyId: req.params.lobbyId } );
+	var game = games.getGame( req.params.gameId );
+	res.render( 'controller', { gameId: req.params.gameId } );
 }
 
 module.exports = {
-	app: app,
-	setIO: function( _io ) {
-		io = _io;
-		declareSocketHandlers();
-	}
+	app: app
 };
-
-
-function declareSocketHandlers(){
-	console.log( 'declaring socket io handlers' );
-	
-	io.on( 'controller join lobby', function( roomId ){
-		console.log( 'controller joined lobby', arguments );
-	} );
-}
