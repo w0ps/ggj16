@@ -82,7 +82,7 @@ module.exports = {
       '-1': 'blue',
       '1': 'red'
     },
-    playerLife: 1,
+    playerLife: 15,
     startingResources: [ 100, 100, 100, 100 ],
     maxDistance: 100, //1000
     tickDelay: 1000 / 5,
@@ -114,6 +114,9 @@ module.exports = {
       //   9/10
       // ]
     ],
+    baseline: 484,
+    leftTreeX: 20,
+    rightTreeX: -200,
     screenVictoryTexts: {
       dark: [
         'name eviscerated those goody two shoes',

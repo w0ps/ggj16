@@ -131,8 +131,6 @@ function pause() {
 }
 
 function finish( playerId ) {
-  console.log( 'FINISHH');
-  console.log( playerId );
   this.running = false;
   this.room.emit( 'victory', playerId );
 }
@@ -148,7 +146,6 @@ function tick() {
 
   this.playerKeys.forEach( function( playerId ) {
     var player = game.players[ playerId ];
-    console.log('weird', player.update );
     player.update = _.extend( player.update || {}, {
       mobs: player.update && player.update.mobs || {},
       resources: player.update && player.update.resources || [],

@@ -1,9 +1,12 @@
 var fs = require('fs'),
     toConvert = {
-        'light': 'characters-light.png',
-        'dark': 'characters-dark.png',
-        'fieldResources': 'field-resources.png'
-    }
+        light: 'characters-light.png',
+        dark: 'characters-dark.png',
+        fieldResources: 'field-resources.png',
+        treeDark: 'tree-of-death.png',
+        treeLight: 'tree-of-life.png',
+        background: 'background.jpg'
+    };
 
 function base64Encode(file) {
     var bitmap = fs.readFileSync(file);
