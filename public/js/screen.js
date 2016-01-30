@@ -8,6 +8,7 @@ function Game() {
   this.players = {};
   this.mobs = {};
   this.resources = {};
+  this.fieldResources = {};
 
   this.contexts = setupGameView();
 }
@@ -18,6 +19,7 @@ function tick( updateData ) {
       width = game.contexts.width * devicePixelRatio,
       height = game.contexts.height * devicePixelRatio,
       mobs = game.mobs,
+      fieldResources = game.fieldResources,
       mobStats = tweakables.mobStats,
       colors = tweakables.colors;
 
@@ -26,19 +28,22 @@ function tick( updateData ) {
   fg.clearRect( 0, 0, width, height );
 
   Object.keys( mobs ).forEach( tickAndDrawMob );
+  Object.keys( fieldResources ).forEach( drawFieldResource );
 
   function updatePlayerAssets( playerId ) {
     var playerData = updateData[ playerId ],
         player = game.players[ playerId ],
         direction = player.direction,
-        mobs = playerData.mobs,
-        modifiers = playerData.modifiers;
+        updatedMobs = playerData.mobs,
+        updatedModifiers = playerData.modifiers,
+        updatedFieldResources = playerData.fieldResources;
 
-    if( mobs ) Object.keys( mobs ).forEach( updateMob );
-    if( modifiers ) Object.keys( modifiers ).forEach( applyModifier );
+    if( updatedMobs ) Object.keys( updatedMobs ).forEach( updateMob );
+    if( updatedModifiers ) Object.keys( updatedModifiers ).forEach( applyModifier );
+    if( updatedFieldResources ) Object.keys( updatedFieldResources ).forEach( updateFieldResource );
 
     function updateMob( mobId ) {
-      var mob = mobs[ mobId ],
+      var mob = updatedMobs[ mobId ],
           gameMob = game.mobs[ mobId ];
       console.log( 'mob.died', mob.died );
       if( mob.created ) {
@@ -72,7 +77,13 @@ function tick( updateData ) {
     }
 
     function applyModifier( modifierName ) {
-      player.modifiers[ modifierName ] = modifiers[ modifierName ];
+      player.modifiers[ modifierName ] = updatedModifiers[ modifierName ];
+    }
+
+    function updateFieldResource( fieldResourceId ) {
+      var fieldResource = fieldResources[ fieldResourceId ],
+          updatedFieldResource = updatedFieldResources[ fieldResourceId ];
+      if( updatedFieldResource.died ) fieldResource.died = true;
     }
 
     //console.log( 'updatefun', updateData[ playerId ] );
@@ -85,13 +96,24 @@ function tick( updateData ) {
 
     mob.position += speed * mob.direction;
     fg.beginPath();
-    x = ( mob.position / tweakables.maxDistance ) * width
+    x = ( mob.position / tweakables.maxDistance ) * width;
     fg.arc( x , 100, 10, 0, 2*Math.PI, false );
 
     fg.fillStyle = colors[ mob.direction ];
     fg.fill();
 
     if( mob.died ) delete mobs[ mobId ];
+  }
+
+  function drawFieldResource( resourceId ) {
+    var fResource = fieldResources[ resourceId ];
+    x = ( fResource.position / tweakables.maxDistance ) * width;
+    fg.beginPath();
+    fg.arc( x, 100, 5, 0, 2*Math.PI, false );
+    fg.fillStyle = 'black';
+    fg.fill();
+
+    if( fResource.died ) delete fieldResources[ resourceId ];
   }
 }
 
@@ -178,21 +200,38 @@ function loadGameState( data ) {
   function updatePlayerAssets( id ) {
     var player = game.players[ id ],
         direction = player.direction,
-        assets = data[ id ];
+        assets = data[ id ],
+        mobs = assets.mobs,
+        fieldResources = assets.fieldResources;
 
-    Object.keys( assets.mobs ).forEach( fixMob );
+    Object.keys( mobs ).forEach( fixMob );
+    Object.keys( fieldResources ).forEach( fixResource );
 
     function fixMob( mobId ) {
-      var mob = game.mobs[ mobId ];
+      var mob = game.mobs[ mobId ],
+          updateMob;
 
       if( !mob ) {
-        mob = game.mobs[ mobId ] = assets.mobs[ mobId ];
+        mob = game.mobs[ mobId ] = mobs[ mobId ];
         mob.direction = direction;
         mob.player = player;
       } else {
-        mob.position = assets.mobs[ mobId ].position;
-        mob.health = assets.mobs[ mobId ].health;
-        mob.fighting = assets.mobs[ mobId ].fighting;
+        updateMob = mobs[ mobId ];
+        mob.position = updateMob.position;
+        mob.health = updateMob.health;
+        mob.fighting = updateMob.fighting;
+      }
+    }
+
+    function fixResource( resourceId ) {
+      var fResource = game.fieldResources[ resourceId ];
+
+      if( !fResource ) {
+        fResource = game.fieldResources[ resourceId ] = fieldResources[ resourceId ];
+        console.log( fResource );
+      } else {
+        fResource.health = fieldResources[ resourceId ];
+        fResource.died = fieldResources[ resourceId ];
       }
     }
 
