@@ -60,19 +60,17 @@ function tick( updateData ) {
         gameMob.speed = mobStats[ mob.type ].speed;
         gameMob.player = player;
       } else if( mob.died ){
-        alert( 'died!' );
         gameMob.died = true;
       } else if( mob.finished ) {
-        alert( 'finished' );
+        delete game.mobs[ mobId ];
       } else {
         gameMob = game.mobs[ mobId ];
         Object.keys( mob ).forEach( function( property ) {
           gameMob[ property ] = mob[ property ];
         } );
 
-        if( mob.damaged ) console.log( 'ouch: ' + mob.damaged );
+        // if( mob.damaged ) console.log( 'ouch: ' + mob.damaged );
 
-        console.log( gameMob );
 
         if( mob.fighting ) {
           gameMob.fighting = true;
