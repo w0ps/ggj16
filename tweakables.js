@@ -43,6 +43,6 @@ module.exports = {
     	'-1': 'red',
     	'1': 'blue'
     },
-    maxDistance: 20, //1000
-    tickDelay: 1000 / 0.5
+    maxDistance: 100, //1000
+    tickDelay: 1000 / 2
 };

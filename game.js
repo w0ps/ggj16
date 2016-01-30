@@ -124,7 +124,7 @@ function tick() {
 
   this.playerKeys.forEach( _.partial( tickPlayer, _, this.players ) );
   this.playerKeys.forEach( _.partial( finishTurn, _, this.players, globalInfo ) );
-  console.log( globalInfo );
+  console.log( JSON.stringify( globalInfo ) );
   this.room.emit( 'update', globalInfo );
 }
 
@@ -153,11 +153,15 @@ function mobTick( mob, index, mobs, game, player ) {
       damageDealt, value, i,
       rStats, rIndex;
 
+  console.log( closestEnemy, closestEnemyPosition, closestEnemyDistance, closestEnemyInRange );
+
   if( closestEnemyInRange ) {
     mob.speed = 0;
     damageDealt = stats.strength * modifiers.strength;
     closestEnemy.health -= damageDealt;
     mobInfo.fighting = true;
+    console.log( 'fighting other mob' );
+    //process.exit();
 
     if( enemyInfo = player.opponent.update.mobs[ closestEnemy.id ] ) {
       
@@ -191,9 +195,12 @@ function mobTick( mob, index, mobs, game, player ) {
       fieldResources.shift();
     }
   }
-  else {
-    mob.speed = stats.speed * player.modifiers.speed * player.direction;
-    if( mob.speed === 0 ) mobInfo.fighting = false;
+  else { // move mob;
+    if( mob.speed === 0 ) {
+      mobInfo.fighting = false;
+    }
+
+    if( !mob.speed ) mob.speed = stats.speed * player.modifiers.speed * player.direction;
 
     if( mobPosition + mob.speed < 0 || mobPosition + mob.speed > maxDistance ) {
       player.opponent.inflictDamage();
@@ -307,7 +314,8 @@ function joinGame( socket, name ) {
     id: socket.id,
     name: name,
     direction: player.direction,
-    resources: player.resources
+    resources: player.resources,
+    modifiers: player.modifiers
   } );
   
   if( this.playerKeys.length === 2 ) {
