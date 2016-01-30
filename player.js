@@ -15,7 +15,8 @@ function Player( game, socket, name ) {
 		speed: 1,
 		strength: 1,
 		resistance: 1,
-		profit: 1
+		profit: 1,
+		range: 1
 	};
 }
 
