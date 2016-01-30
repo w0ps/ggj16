@@ -71,19 +71,11 @@ function Game( id ){
   var game = this;
   games[ id ] = this;
 
-<<<<<<< HEAD
-	this.players = {};
-	this.screens = {};
-	this.room = io.of( '/' + id );
-	this.room.on( 'connection', function( socket ){
-		socket.on( 'screen joined', game.addScreen.bind( game, socket ) );
-=======
   this.players = {};
   this.screens = {};
   this.room = io.of( '/' + id );
   this.room.on( 'connection', function( socket ){
     Object.keys( socketInterface ).forEach( registerSocketHandler );
->>>>>>> origin/master
 
     function registerSocketHandler( eventName ) {
       var handler = game[ socketInterface[ eventName ] ];
