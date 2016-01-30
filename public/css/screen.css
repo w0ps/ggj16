@@ -24,4 +24,6 @@ body {
 
 #game-container canvas {
 	position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
 }
