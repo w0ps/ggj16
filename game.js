@@ -134,8 +134,7 @@ function tick() {
     player.update = _.extend( player.update || {}, {
       mobs: player.update && player.update.mobs || {},
       resources: player.update && player.update.resources || [],
-      fieldResources: {},
-      spells: {}
+      fieldResources: {}
     } );
   } );
 
@@ -150,7 +149,6 @@ function tickPlayer( playerId, players ) {
 }
 
 function mobTick( mob, index, mobs, game, player ) {
-  console.log( { mob: mob, pUpdate: player.update } );
   var stats = mobStats[ mob.type ],
       fieldResources = player.fieldResources,
       opponent = player.opponent,
@@ -305,6 +303,8 @@ function summon( socket, gesture ) {
 }
 
 function joinGame( socket, name ) {
+  if( Object.keys( this.players ).length === 2 ) return socket.emit( 'game full' );
+
   var player = this.players[ socket.id ] = new Player( this, socket, name ),
       sendableData = [ { id: socket.id, name: player.name, resources: player.resources, avatar: player.avatar } ],
       opponent;
