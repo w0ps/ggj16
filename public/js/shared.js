@@ -11,6 +11,7 @@ function init() {
 	keys.forEach( bindSocket );
 
 	return initCallback && initCallback();
+	
 	function bindSocket( key ) {
 		socket.on( key, socketHandlers[ key ] );
 	}

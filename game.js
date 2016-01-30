@@ -160,6 +160,7 @@ function mobTick( mob, index, mobs, game, player ) {
     mobInfo.fighting = true;
 
     if( enemyInfo = player.opponent.update.mobs[ closestEnemy.id ] ) {
+      
       if( enemyInfo.damaged ) enemyInfo.damaged += damageDealt;
       else enemyInfo.damaged = damageDealt;
     }
@@ -192,6 +193,7 @@ function mobTick( mob, index, mobs, game, player ) {
   }
   else {
     mob.speed = stats.speed * player.modifiers.speed * player.direction;
+    if( mob.speed === 0 ) mobInfo.fighting = false;
 
     if( mobPosition + mob.speed < 0 || mobPosition + mob.speed > maxDistance ) {
       player.opponent.inflictDamage();
@@ -265,7 +267,7 @@ function summon( socket, gesture ) {
     player.mobs.unshift( newMob );
     player.update = player.update || {};
     player.update.mobs = player.update.mobs || {};
-    player.update.mobs[ newMob.id ] = { created: true, position: newMob.position };
+    player.update.mobs[ newMob.id ] = { created: true, position: newMob.position, type: newMob.type };
   }
   else {
     player.opponent.update = player.opponent.update || {};

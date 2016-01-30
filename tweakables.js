@@ -39,6 +39,10 @@ module.exports = {
         }
       }
     },
+    colors: {
+    	'-1': 'red',
+    	'1': 'blue'
+    },
     maxDistance: 20, //1000
     tickDelay: 1000 / 0.5
 };
