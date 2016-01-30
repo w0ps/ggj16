@@ -1,11 +1,21 @@
 extends main
 
 append header
-	link( rel='stylesheet', href="/css/screen.css" )
-	script( src='/js/screen.js' )
-	script
-		!= "var gameId = '" + gameId + "';"
+    link( rel='stylesheet', href="/css/screen.css" )
+    script( src='/js/screen.js' )
+    script
+        != "var gameId = '" + gameId + "';"
+    script
+        != "var sprites = " + JSON.stringify(sprites) + ","
+        != "    base64Sprites = {};"
+        != "function loadSprite( sprite ) {"
+        != "  var image = new Image();"
+        != "  image.src = 'data:image/png;base64,' + sprites[sprite];"
+        != "  base64Sprites[sprite] = image;"
+        != "};"
+        != "Object.keys( sprites ).forEach( loadSprite );"
+        
 
 block content
-	#qrcode
-	#game-container
+    #qrcode
+    #game-container
