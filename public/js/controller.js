@@ -9,6 +9,8 @@ function init(){
 
 	socket.emit( 'controller joined', playerName );
 
+	socket.on( 'players', playerJoined );
+
 	socket.on( 'ready?', areYouReady );
 
 	socket.on( 'play', showPlay );
@@ -16,6 +18,22 @@ function init(){
 	socket.on( 'requestPause', confirmPause );
 	
 	socket.on( 'paused', pause );
+
+	socket.on( 'update', update );
+}
+
+var players = {};
+
+function playerJoined( playerData ) {
+	playerData.forEach( setPlayer );
+	
+	function setPlayer( playerData ) {
+		players[ playerData.id ] = {
+			name: playerData.name,
+			resources: playerData.resources,
+			avatar: playerData.avatar
+		};
+	}
 }
 
 function areYouReady( customMessage ) {
@@ -36,4 +54,27 @@ function confirmPause( customMsg ) {
 
 function pause() {
 	console.log( 'pause...' );
+}
+
+function update( data ) {
+	console.log( data );
+
+	Object.keys( data ).forEach( updatePlayer );
+
+	return;
+
+	function updatePlayer( playerId ) {
+		var player = players[ playerId ],
+				info = data[ playerId ];
+		
+		if( info.resources ) {
+			info.resources.forEach( updateResource );
+
+			console.log( info.resources );
+		}
+
+		function updateResource( value, index ) {
+			if( value !== null ) player.resources[ index ] = value;
+		}
+	}
 }

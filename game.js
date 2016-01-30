@@ -120,8 +120,12 @@ function pause() {
 }
 
 function tick() {
+  var globalInfo;
+
   if( !this.running ) return;
   setTimeout( this.tick.bind( this ), tickDelay );
+
+  globalInfo = {};
 
   this.playerKeys.forEach( playerId => this.players[ playerId ].update = {
     mobs: {},
@@ -130,7 +134,9 @@ function tick() {
     spells: {}
   } );
   this.playerKeys.forEach( _.partial( tickPlayer, _, this.players ) );
-  this.playerKeys.forEach( _.partial( finishTurn, _, this.players ) );
+  this.playerKeys.forEach( _.partial( finishTurn, _, this.players, globalInfo ) );
+console.log( globalInfo );
+  this.room.emit( 'update', globalInfo );
 }
 
 function tickPlayer( playerId, players ) {
@@ -225,11 +231,19 @@ function finishTurn( playerId, players, info ) {
 
   mobs.forEach( moveMob );
 
-  console.log( players[ playerId ].update );
+  Object.keys( player.update ).forEach( deleteIfEmpty );
+
+  if( Object.keys( player.update ).length ) info[ playerId ] = player.update;
+
+  // console.log( player.update );
   return;
 
   function moveMob( mob ) {
     if( mob.speed ) mob.position += mob.speed;
+  }
+
+  function deleteIfEmpty( key ) {
+    if( !Object.keys( player.update[ key ] ).length ) delete player.update[ key ];
   }
 
 }
@@ -270,19 +284,24 @@ function summon( socket, gesture ) {
 
 function joinGame( socket, name ) {
   var player = this.players[ socket.id ] = new Player( this, socket, name ),
+      sendableData = [ { id: socket.id, name: player.name, resources: player.resources, avatar: player.avatar } ],
       opponent;
+
   this.playerKeys = Object.keys( this.players );
+
   console.log( this.playerKeys );
 
-  player.direction = this.playerKeys.length === 1 ? 1 : -1; 
+  player.direction = this.playerKeys.length === 1 ? 1 : -1;
   
   if( this.playerKeys.length === 2 ) {
     player.opponent = opponent = this.players[ this.playerKeys[ 0 ] ];
     opponent.opponent = player;
+
+    sendableData.push( { id: opponent.socket.id, name: opponent.name, resources: opponent.resources, avatar: opponent.avatar } );
     this.room.emit( 'ready?' );
   }
 
-  this.room.emit( 'player joined', player.name );
+  this.room.emit( 'players', sendableData );
 }
 
 function playerReady( socket ) {
