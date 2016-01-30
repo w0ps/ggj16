@@ -105,7 +105,7 @@ module.exports = {
       //   9/10
       // ]
     ],
-    baseline: 484,
+    baseline: 800,
     leftTreeX: 20,
     rightTreeX: -200,
     screenVictoryTexts: {
