@@ -174,7 +174,8 @@ socketHandlers = {
   'play' : play,
   'pause' : pause,
   'gamestate' : loadGameState,
-  'update': tick
+  'update': tick,
+  'victory': handleVictory
 };
 
 document.addEventListener( 'DOMContentLoaded', init );
@@ -240,6 +241,10 @@ function pause() {
   console.log( 'pausing' );
 }
 
+function handleVictory( socketId ) {
+  console.log( 'victory!' + socketId );
+}
+
 var gotGamestate;
 
 function loadGameState( data ) {
@@ -290,6 +295,5 @@ function loadGameState( data ) {
 }
 
 function drawSprite( context, image, column, row, spriteWidth, spriteHeight, spriteYOffset, x, y ) {
-  console.log( ( x - spriteWidth / 2 ) * window.devicePixelRatio, ( y - spriteWidth / 2 + spriteYOffset ) * window.devicePixelRatio )
   context.drawImage(image, column * spriteWidth, row * spriteHeight, spriteWidth, spriteHeight, x - spriteWidth , y - spriteWidth - spriteYOffset, spriteWidth * window.devicePixelRatio, spriteHeight * window.devicePixelRatio );
 }

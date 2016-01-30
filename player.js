@@ -1,5 +1,4 @@
-var playerLifeCount = 100,
-		startingResources = [ 100, 0, 0, 0 ];
+var tweakables = require( './tweakables' );
 
 function Player( game, socket, name ) {
 	console.log( 'creating player' );
@@ -7,8 +6,8 @@ function Player( game, socket, name ) {
 	this.game = game;
 	this.socket = socket;
 	this.name = name;
-	this.life = playerLifeCount;
-	this.resources = startingResources.slice();
+	this.life = tweakables.playerLife;
+	this.resources = tweakables.startingResources.slice();
 	this.fieldResources = [];
 	this.modifiers = {
 		cost: 1,
@@ -29,12 +28,14 @@ function assignPlayerPrototypeMethods() {
 
 function inflictDamage() {
 	if( --this.life === 0 ) this.die();
-	this.update.life = this.life;
+	else this.update.life = this.life;
+	console.log( 'life: ', this.life );
 }
 
 function die(){
 	this.dead = true;
-	this.game.finish();
+	console.log( 'died!!!' );
+	this.game.finish( this.socket.id );
 }
 
 module.exports = Player;

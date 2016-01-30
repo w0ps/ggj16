@@ -82,6 +82,8 @@ module.exports = {
       '-1': 'blue',
       '1': 'red'
     },
+    playerLife: 1,
+    startingResources: [ 100, 100, 100, 100 ],
     maxDistance: 100, //1000
     tickDelay: 1000 / 5,
     spriteWidth: 64,
@@ -90,5 +92,17 @@ module.exports = {
     playerNames: {
       '-1': 'light',
       '1': 'dark'
-    }
+    },
+    resourceDistribution: [
+      [
+        1/10,
+        2/10,
+        3/10
+      ]//,
+      // [
+      //   7/10,
+      //   8/10
+      //   9/10
+      // ]
+    ]
 };
