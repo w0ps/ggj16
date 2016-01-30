@@ -104,5 +104,27 @@ module.exports = {
       //   8/10
       //   9/10
       // ]
+    ],
+    screenVictoryTexts: {
+      dark: [
+        'name eviscerated those goody two shoes',
+        'the light was extinguished forever by name',
+        'and thus a thousand years of darkness began'
+      ],
+      light: [
+        'name was happy that it was a good day after all',
+        'in a generous gesture, the enlightened ruler name let evil off with a friendly warning',
+        'puppies everywhere rejoice for they were saved by name'
+      ]
+    },
+    controllerVictoryTexts: [
+      'you did good enough',
+      'that was quite alright',
+      'I knew you would win!'
+    ],
+    controllerDefeatTexts: [
+      'you suck, seriously',
+      'keep on trying',
+      'I am so disappointed in you'
     ]
 };
