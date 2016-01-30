@@ -51,7 +51,7 @@ function tick( updateData ) {
     function updateMob( mobId ) {
       var mob = updatedMobs[ mobId ],
           gameMob = game.mobs[ mobId ];
-      console.log( 'mob.died', mob.died );
+
       if( mob.created ) {
         if( gameMob ) console.log( 'weird this id already exists' );
         gameMob = game.mobs[ mobId ] = mob;
@@ -65,12 +65,7 @@ function tick( updateData ) {
         delete game.mobs[ mobId ];
       } else {
         gameMob = game.mobs[ mobId ];
-        Object.keys( mob ).forEach( function( property ) {
-          gameMob[ property ] = mob[ property ];
-        } );
-
-        // if( mob.damaged ) console.log( 'ouch: ' + mob.damaged );
-
+        Object.keys( mob ).forEach( copyProperty );
 
         if( mob.fighting ) {
           gameMob.fighting = true;
@@ -78,6 +73,10 @@ function tick( updateData ) {
         } else if( mob.fighting === false ) {
           gameMob.speed = mobStats[ gameMob.type ].speed;
           delete gameMob.fighting;
+        }
+
+        function copyProperty( property ) {
+          gameMob[ property ] = mob[ property ];
         }
       }
     }
@@ -103,13 +102,12 @@ function tick( updateData ) {
         x, row;
 
     mob.position += speed * mob.direction;
-    fg.beginPath();
     x = ( mob.position / tweakables.maxDistance ) * width;
-    fg.arc( x , 100, 10, 0, 2*Math.PI, false );
+    //fg.beginPath();
+    //fg.arc( x , 100, 10, 0, 2*Math.PI, false );
 
-    fg.fillStyle = colors[ mob.direction ];
-    fg.fill();
-    //function drawSprite( context, image, column, row, spriteWidth, spriteHeight, spriteYOffset, x, y ) {
+    //fg.fillStyle = colors[ mob.direction ];
+    //fg.fill();
 
     if( mob.died ) {
       drawSprite( bg, sprite, mob.type, 4, 64, 64, 8, x, 100 );
@@ -143,10 +141,10 @@ function tick( updateData ) {
         row;
     x = ( fResource.position / tweakables.maxDistance ) * width;
 
-    fg.beginPath();
-    fg.arc( x, 100, 5, 0, 2*Math.PI, false );
-    fg.fillStyle = 'black';
-    fg.fill();
+    // fg.beginPath();
+    // fg.arc( x, 100, 5, 0, 2*Math.PI, false );
+    // fg.fillStyle = 'black';
+    // fg.fill();
 
     var spriteColumn = fResource.type + ( fResource.direction === -1 ? 1 : 0 );
 
@@ -208,7 +206,8 @@ function setupGameView( data ) {
       height = data.height || 200,
       canvasBg = document.createElement( 'canvas' ),
       canvasFg = document.createElement( 'canvas' ),
-      gameContainer = document.getElementById( 'game-container' );
+      gameContainer = document.getElementById( 'game-container' ),
+      api;
 
   canvasBg.width = width * window.devicePixelRatio;
   canvasFg.width = width * window.devicePixelRatio;
@@ -223,13 +222,18 @@ function setupGameView( data ) {
   gameContainer.appendChild( canvasBg );
   gameContainer.appendChild( canvasFg );
 
-  return {
+  api = {
     bg: canvasBg.getContext( '2d' ),
     fg: canvasFg.getContext( '2d' ),
     width: width,
     height: height,
     center: [ width / 2, height / 2 ]
   };
+
+  api.bg.fillStyle = tweakables.backgroundColor;
+  api.bg.fillRect( 0, 0, width * window.devicePixelRatio, height * window.devicePixelRatio );
+
+  return api;
 }
 
 function play() {

@@ -82,7 +82,7 @@ module.exports = {
       '-1': 'blue',
       '1': 'red'
     },
-    playerLife: 1,
+    playerLife: 15,
     startingResources: [ 100, 100, 100, 100 ],
     maxDistance: 100, //1000
     tickDelay: 1000 / 5,
@@ -126,5 +126,6 @@ module.exports = {
       'you suck, seriously',
       'keep on trying',
       'I am so disappointed in you'
-    ]
+    ],
+    backgroundColor: '#10381d'
 };
