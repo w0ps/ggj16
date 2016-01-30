@@ -33,10 +33,6 @@ function initCallback() {
     stats = document.getElementById('stats');
     canvas = document.getElementById('gesture');
     _g = canvas.getContext('2d');
-    _g.fillStyle = "rgb(0,0,225)";
-    _g.strokeStyle = "rgb(0,0,225)";
-    _g.lineWidth = 3;
-    _g.font = "16px Gentilis";
     sizeCanvas();
 
     // Add events
@@ -153,8 +149,6 @@ function sizeCanvas() {
     canvas.height = height;
 
     _rc = getCanvasRect(canvas);
-    _g.fillStyle = "rgb(255,255,136)";
-    _g.fillRect(0, 0, _rc.width, 20);
 }
 
 function getCanvasRect(canvas) {
@@ -192,6 +186,9 @@ function touchStartEvent(x, y) {
     _points.length = 1; // clear
     _points[0] = new Point(x, y);
     console.log("Recording unistroke...");
+    _g.fillStyle = "rgb(138,7,7)";
+    _g.strokeStyle = "rgb(138,7,7)";
+    _g.lineWidth = 5;
     _g.fillRect(x - 4, y - 3, 9, 9);
 }
 
