@@ -5,7 +5,12 @@ append header
     script( src='/js/controller.js' )
     script
         != "var gameId = '" + gameId + "';"
-
+    script
+        != 'var tweakables = ( function( module ){'
+        != '  module = {};'
+        != tweakables
+        !=   'return module.exports;'
+        != '} )()'
     link( rel='stylesheet' type='text/css' href='/css/mobile.css' )
 
 block content
@@ -16,4 +21,3 @@ block content
         span#resource2 2
         span#resource3 3
         span#resource4 4
-    

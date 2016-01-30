@@ -1,6 +1,7 @@
 var express = require( 'express' ),
     app = express(),
     _ = require( 'underscore' ),
+    fs = require( 'fs' ),
     io;
 
 var tweakables = require( './tweakables' ),
@@ -16,6 +17,9 @@ var tweakables = require( './tweakables' ),
 var Player = require( './player' ),
     Mob = require( './mob' ),
     Resource = require( './resource' );
+console.log(fs.readFileSync( './tweakables.js', 'utf8' ));
+app.locals.tweakables = fs.readFileSync( './tweakables.js', 'utf8' );
+console.log( app.locals.tweakables );
 
 app.get( '/:gameId', showGame );
 
