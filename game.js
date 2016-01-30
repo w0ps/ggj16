@@ -75,34 +75,30 @@ function tick() {
 	var updateInfo = {};
 
 	this.playerKeys.forEach( _.partial( tickPlayer, _, this.players ) );
-	this.playerKeys.forEach( _.partial( cleanupPlayer, _, this.players, updateInfo ) );
+	this.playerKeys.forEach( _.partial( finishTurn, _, this.players, updateInfo ) );
 }
 
-function tickPlayer( playerId, players ) {
+function tickPlayer( playerId, players, updateInfo ) {
 	var player = players[ playerId ],
 			mobs = player.mobs,
 			fieldResources = player.fieldResources,
-			enemies = player.opponent.mobs;
+			enemies = player.opponent.mobs,
+			info = updateInfo[ playerId ] = {
+				died: [],
+				damaged: [],
+				fighting: [],
+				looted: []
+			};
 
-	mobs.forEach( _.partial( mobTick, _, this, player, enemies, fieldResources, player.opponent ) );
+	mobs.forEach( _.partial( mobTick, _, this, player, enemies, fieldResources, player.opponent, info ) );
 }
 
-function cleanupPlayer( playerId, players, updateInfo ) {
+function finishTurn( playerId, players, info ) {
 	var player = players[ playerId ],
 			mobs = player.mobs,
-			mob, info, i = 1;
-
-	info = updateInfo[ playerId ] = {
-		died: [],
-		damaged: [],
-		fighting: []
-	};
+			mob, i = 1;
 	
-	while( mobs[ mobs.length - 1 ].dead ) {
-		mob = mobs.pop();
-		player.opponent.resources[ 2 ] += mobStats[ mob.type ].value;
-		info.died.push( { id: mob.id } );
-	}
+	while( mobs[ mobs.length - 1 ].dead ) mobs.pop();
 
 	while( mobs[ mobs.length - i ].damage ) {
 		mob = mobs[ mobs.length - i ];
@@ -117,7 +113,7 @@ function cleanupPlayer( playerId, players, updateInfo ) {
 	}
 }
 
-function mobTick( mob, game, player, enemies, fieldResources, opponent ) {
+function mobTick( mob, game, player, enemies, fieldResources, opponent, info ) {
 	var stats = mobStats[ mob.type ],
 			range = stats.range,
 			mobPosition = mob.position,
@@ -125,20 +121,29 @@ function mobTick( mob, game, player, enemies, fieldResources, opponent ) {
 			closestEnemyPosition = closestEnemy ? closestEnemy.position : null,
 			closestEnemyDistance = closestEnemyPosition ? Math.abs( mobPosition - closestEnemyPosition ) : null,
 			closestResource = resources[ 0 ],
-			closestResourceDistance = closestResource ? Math.abs( mobPosition - closestResource.position ) : null;
+			closestResourceDistance = closestResource ? Math.abs( mobPosition - closestResource.position ) : null,
+			damageDealt;
 
 	mob.moving = false;
 
 	if( closestEnemyDistance <= range ) {
 		closestEnemy.damage += stats.strength * player.strengthModifier;
-		if( closestEnemy.damage >= mobStats[ closestEnemy.type ].health ) closestEnemy.dead = true;
+		if( closestEnemy.damage >= mobStats[ closestEnemy.type ].health ) {
+			closestEnemy.dead = true;
+			info.died.push( { id: mobId } );
+			player.resources[ 2 ] += mobStats[ mob.type ].value;
+		}
 	}
 	else if( closestResourceDistance <= range ) {
-		closestResource.damage += stats.strength * player.strengthModifier;
-		if( closestResource.damage >= resourceStats[ resource.type ].health ) resource.dead = true;
+		damageDealt = stats.strength * player.strengthModifier;
+		closestResource.damage += damageDealt;
+
+		if( closestResource.damage >= resourceStats[ resource.type ].health ) {
+			resource.dead = true;
+			updateInfo.looted.push( { id: resourceId } );
+		}
 	}
 	else {
-		mob.moving = true;
 		mob.position = stats.speed * player.speedModifier * player.direction;
 	}
 }
