@@ -15,13 +15,15 @@ function Game() {
 function tick( updateData ) {
   var fg = game.contexts.fg,
       bg = game.contexts.bg,
+      width = game.contexts.width * devicePixelRatio,
+      height = game.contexts.height * devicePixelRatio,
       mobs = game.mobs,
       mobStats = tweakables.mobStats,
       colors = tweakables.colors;
 
   Object.keys( updateData ).forEach( updatePlayerAssets );
 
-  fg.clearRect( 0, 0, game.contexts.width * window.devicePixelRatio, game.contexts.height * window.devicePixelRatio);
+  fg.clearRect( 0, 0, width, height );
 
   Object.keys( mobs ).forEach( tickAndDrawMob );
 
@@ -29,19 +31,23 @@ function tick( updateData ) {
     var playerData = updateData[ playerId ],
         player = game.players[ playerId ],
         direction = player.direction,
-        mobs = playerData.mobs;
+        mobs = playerData.mobs,
+        modifiers = playerData.modifiers;
 
     if( mobs ) Object.keys( mobs ).forEach( updateMob );
+    if( modifiers ) Object.keys( modifiers ).forEach( applyModifier );
 
     function updateMob( mobId ) {
       var mob = mobs[ mobId ],
           gameMob = game.mobs[ mobId ];
+      console.log( 'mob.died', mob.died );
       if( mob.created ) {
         if( gameMob ) console.log( 'weird this id already exists' );
         gameMob = game.mobs[ mobId ] = mob;
         delete mob.created;
         gameMob.direction = direction;
         gameMob.speed = mobStats[ mob.type ].speed;
+        gameMob.player = player;
       } else if( mob.died ){
         alert( 'died!' );
         gameMob.died = true;
@@ -58,11 +64,15 @@ function tick( updateData ) {
         if( mob.fighting ) {
           gameMob.fighting = true;
           gameMob.speed = 0;
-        } else if( !mob.fighting ) {
+        } else if( mob.fighting === false ) {
           gameMob.speed = mobStats[ gameMob.type ].speed;
           delete gameMob.fighting;
         }
       }
+    }
+
+    function applyModifier( modifierName ) {
+      player.modifiers[ modifierName ] = modifiers[ modifierName ];
     }
 
     //console.log( 'updatefun', updateData[ playerId ] );
@@ -70,11 +80,13 @@ function tick( updateData ) {
 
   function tickAndDrawMob( mobId ) {
     var mob = mobs[ mobId ],
-        speed = mob.speed;
+        speed = mob.speed * mob.player.modifiers.speed,
+        x;
 
     mob.position += speed * mob.direction;
     fg.beginPath();
-    fg.arc( mob.position * 30 , 100, 10, 0, 2*Math.PI, false );
+    x = ( mob.position / tweakables.maxDistance ) * width
+    fg.arc( x , 100, 10, 0, 2*Math.PI, false );
 
     fg.fillStyle = colors[ mob.direction ];
     fg.fill();
@@ -176,6 +188,7 @@ function loadGameState( data ) {
       if( !mob ) {
         mob = game.mobs[ mobId ] = assets.mobs[ mobId ];
         mob.direction = direction;
+        mob.player = player;
       } else {
         mob.position = assets.mobs[ mobId ].position;
         mob.health = assets.mobs[ mobId ].health;
