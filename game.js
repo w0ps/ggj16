@@ -131,8 +131,6 @@ function pause() {
 }
 
 function finish( playerId ) {
-  console.log( 'FINISHH');
-  console.log( playerId );
   this.running = false;
   this.room.emit( 'victory', playerId );
 }

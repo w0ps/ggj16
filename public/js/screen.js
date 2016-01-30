@@ -23,6 +23,7 @@ function tick( updateData ) {
       mobs = game.mobs,
       fieldResources = game.fieldResources,
       mobStats = tweakables.mobStats,
+      baseline = tweakables.baseline,
       colors = tweakables.colors;
 
   Object.keys( updateData ).forEach( updatePlayerAssets );
@@ -103,14 +104,9 @@ function tick( updateData ) {
 
     mob.position += speed * mob.direction;
     x = ( mob.position / tweakables.maxDistance ) * width;
-    //fg.beginPath();
-    //fg.arc( x , 100, 10, 0, 2*Math.PI, false );
-
-    //fg.fillStyle = colors[ mob.direction ];
-    //fg.fill();
 
     if( mob.died ) {
-      drawSprite( bg, sprite, mob.type, 4, 64, 64, 8, x, 100 );
+      drawSprite( bg, sprite, mob.type, 4, 64, 64, 8, x, baseline );
       delete mobs[ mobId ];
     } else {
       if( mob.speed ){
@@ -132,7 +128,7 @@ function tick( updateData ) {
         }
       }
 
-      drawSprite( fg, sprite, mob.type, row, 64, 64, 8, x, 100 );
+      drawSprite( fg, sprite, mob.type, row, 64, 64, 8, x, baseline );
     }
   }
 
@@ -151,7 +147,7 @@ function tick( updateData ) {
     if( fResource.died ) {
       delete fieldResources[ resourceId ];
       row = 2;
-      drawSprite( bg, base64Sprites.fieldResources, spriteColumn, row, 64, 64, 8, x, 100 );
+      drawSprite( bg, base64Sprites.fieldResources, spriteColumn, row, 64, 64, 8, x, baseline );
     } else {
       if( fResource.firstFrame ) {
         row = 1;
@@ -160,7 +156,7 @@ function tick( updateData ) {
         row = 0;
         fResource.firstFrame = true;
       }
-      drawSprite( fg, base64Sprites.fieldResources, spriteColumn, row, 64, 64, 8, x, 100 );
+      drawSprite( fg, base64Sprites.fieldResources, spriteColumn, row, 64, 64, 8, x, baseline );
     }
   }
 }
@@ -200,13 +196,14 @@ function removeQRInvite() {
   document.getElementById( 'qrcode' ).textContent = '';
 }
 
-function setupGameView( data ) {
-  data = data || {};
-  var width = data.width || 600,
-      height = data.height || 200,
+function setupGameView() {
+  var background = base64Sprites.background,
+      width = background.width,
+      height = background.height,
       canvasBg = document.createElement( 'canvas' ),
       canvasFg = document.createElement( 'canvas' ),
       gameContainer = document.getElementById( 'game-container' ),
+      bg, fg,
       api;
 
   canvasBg.width = width * window.devicePixelRatio;
@@ -222,16 +219,21 @@ function setupGameView( data ) {
   gameContainer.appendChild( canvasBg );
   gameContainer.appendChild( canvasFg );
 
+  bg = canvasBg.getContext( '2d' );
+  fg = canvasFg.getContext( '2d' );
+
   api = {
-    bg: canvasBg.getContext( '2d' ),
-    fg: canvasFg.getContext( '2d' ),
+    bg: bg,
+    fg: fg,
     width: width,
     height: height,
     center: [ width / 2, height / 2 ]
   };
 
-  api.bg.fillStyle = tweakables.backgroundColor;
-  api.bg.fillRect( 0, 0, width * window.devicePixelRatio, height * window.devicePixelRatio );
+  bg.drawImage( base64Sprites.background, 0, 0, width, height, 0, 0, width * devicePixelRatio, height * devicePixelRatio );
+
+  bg.drawImage( base64Sprites.treeDark, 0, 0, 128, 128, tweakables.leftTreeX * devicePixelRatio, tweakables.baseline - 200, 128 * devicePixelRatio, 128 * devicePixelRatio);
+  bg.drawImage( base64Sprites.treeLight, 0, 0, 128, 128, ( width + tweakables.rightTreeX ) * devicePixelRatio, tweakables.baseline - 200, 128 * devicePixelRatio, 128 * devicePixelRatio );
 
   return api;
 }

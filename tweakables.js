@@ -105,6 +105,9 @@ module.exports = {
       //   9/10
       // ]
     ],
+    baseline: 484,
+    leftTreeX: 20,
+    rightTreeX: -200,
     screenVictoryTexts: {
       dark: [
         'name eviscerated those goody two shoes',
@@ -126,6 +129,5 @@ module.exports = {
       'you suck, seriously',
       'keep on trying',
       'I am so disappointed in you'
-    ],
-    backgroundColor: '#10381d'
+    ]
 };
