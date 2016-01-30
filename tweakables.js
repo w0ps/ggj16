@@ -1,7 +1,7 @@
 module.exports = {
   mobStats: [
       { // first mob type
-        speed: 2,
+        speed: 1.5,
         strength: 0.5,
         health: 1,
         range: 1,
@@ -17,7 +17,7 @@ module.exports = {
     ],
     resourceStats: [
       {
-        health: 2,
+        health: 10,
         value: 10,
         index: 1
       },
@@ -40,12 +40,16 @@ module.exports = {
       }
     },
     colors: {
-      '-1': 'red',
-      '1': 'blue'
+      '-1': 'blue',
+      '1': 'red'
     },
     maxDistance: 100, //1000
-    tickDelay: 1000 / 20,
+    tickDelay: 1000 / 5,
     spriteWidth: 64,
     spriteHeight: 64,
-    spriteYOffset: 8
+    spriteYOffset: 8,
+    playerNames: {
+      '-1': 'light',
+      '1': 'dark'
+    }
 };

@@ -1,9 +1,6 @@
-var spriteSheet;
 
 function initCallback() {
   socket.emit( 'screen joined' );
-
-  spriteSheet = document.getElementById( 'spritesheet' );
 
   window.game = new Game();
 
@@ -16,8 +13,6 @@ function Game() {
   this.fieldResources = {};
 
   this.contexts = setupGameView();
-
-  drawSprite( this.contexts.fg, spriteSheet, 0, 0, 64, 64, 8, 100, 100 );
 }
 
 function tick( updateData ) {
@@ -67,6 +62,8 @@ function tick( updateData ) {
       } else if( mob.died ){
         alert( 'died!' );
         gameMob.died = true;
+      } else if( mob.finished ) {
+        alert( 'finished' );
       } else {
         gameMob = game.mobs[ mobId ];
         Object.keys( mob ).forEach( function( property ) {
@@ -104,7 +101,8 @@ function tick( updateData ) {
     var mob = mobs[ mobId ],
         speed = mob.speed * mob.player.modifiers.speed,
         stats = mobStats[ mob.type ],
-        x;
+        sprite = base64Sprites[ tweakables.playerNames[ mob.direction ] ],
+        x, row;
 
     mob.position += speed * mob.direction;
     fg.beginPath();
@@ -114,20 +112,60 @@ function tick( updateData ) {
     fg.fillStyle = colors[ mob.direction ];
     fg.fill();
     //function drawSprite( context, image, column, row, spriteWidth, spriteHeight, spriteYOffset, x, y ) {
-    drawSprite( fg, spriteSheet, mob.type, 0, 64, 64, 8, x, 100 );
 
-    if( mob.died ) delete mobs[ mobId ];
+    if( mob.died ) {
+      drawSprite( bg, sprite, mob.type, 4, 64, 64, 8, x, 100 );
+      delete mobs[ mobId ];
+    } else {
+      if( mob.speed ){
+        if( mob.firstMoveFrame ) {
+          row = 1;
+          mob.firstMoveFrame = false;
+        }
+        else {
+          row = 0;
+          mob.firstMoveFrame = true;
+        }
+      } else {
+        if( mob.firstAttackFrame ) {
+          row = 3;
+          mob.firstAttackFrame = false;
+        } else {
+          row = 2;
+          mob.firstAttackFrame = true;
+        }
+      }
+
+      drawSprite( fg, sprite, mob.type, row, 64, 64, 8, x, 100 );
+    }
   }
 
   function drawFieldResource( resourceId ) {
-    var fResource = fieldResources[ resourceId ];
+    var fResource = fieldResources[ resourceId ],
+        row;
     x = ( fResource.position / tweakables.maxDistance ) * width;
+
     fg.beginPath();
     fg.arc( x, 100, 5, 0, 2*Math.PI, false );
     fg.fillStyle = 'black';
     fg.fill();
 
-    if( fResource.died ) delete fieldResources[ resourceId ];
+    var spriteColumn = fResource.type + ( fResource.direction === -1 ? 1 : 0 );
+
+    if( fResource.died ) {
+      delete fieldResources[ resourceId ];
+      row = 2;
+      drawSprite( bg, base64Sprites.fieldResources, spriteColumn, row, 64, 64, 8, x, 100 );
+    } else {
+      if( fResource.firstFrame ) {
+        row = 1;
+        fResource.firstFrame = false;
+      } else {
+        row = 0;
+        fResource.firstFrame = true;
+      }
+      drawSprite( fg, base64Sprites.fieldResources, spriteColumn, row, 64, 64, 8, x, 100 );
+    }
   }
 }
 
@@ -242,7 +280,7 @@ function loadGameState( data ) {
 
       if( !fResource ) {
         fResource = game.fieldResources[ resourceId ] = fieldResources[ resourceId ];
-        console.log( fResource );
+        fResource.direction = direction;
       } else {
         fResource.health = fieldResources[ resourceId ];
         fResource.died = fieldResources[ resourceId ];
@@ -255,5 +293,5 @@ function loadGameState( data ) {
 
 function drawSprite( context, image, column, row, spriteWidth, spriteHeight, spriteYOffset, x, y ) {
   console.log( ( x - spriteWidth / 2 ) * window.devicePixelRatio, ( y - spriteWidth / 2 + spriteYOffset ) * window.devicePixelRatio )
-  context.drawImage(image, column * spriteWidth, row * spriteHeight, spriteWidth, spriteHeight, x - spriteWidth , y - spriteWidth / 2 - spriteYOffset, spriteWidth * window.devicePixelRatio, spriteHeight * window.devicePixelRatio );
+  context.drawImage(image, column * spriteWidth, row * spriteHeight, spriteWidth, spriteHeight, x - spriteWidth , y - spriteWidth - spriteYOffset, spriteWidth * window.devicePixelRatio, spriteHeight * window.devicePixelRatio );
 }

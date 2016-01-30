@@ -93,8 +93,8 @@ function play() {
   Object.keys( this.players ).forEach( function( id, i ) {
     var player = game.players[ id ];
     
-    if( !i ) game.summon( { id }, player.direction > 0 ? 'inverted pentagram' : 'pentagram' );
-    player.fieldResources.push( new Resource( 0, resourceStats[ 0 ], player.direction > 0 ? 5 : tweakables.maxDistance - 5 ) );
+    if(true || !i ) game.summon( { id }, player.direction > 0 ? 'inverted pentagram' : 'pentagram' );
+    player.fieldResources.push( new Resource( 0, resourceStats[ 0 ], player.direction > 0 ? 10 : tweakables.maxDistance - 10 ) );
     //game.summon( { id }, 'square' );
   } );
 
