@@ -22,8 +22,13 @@ var mobStats = [
     resourceStats = [
       {
         health: 2,
-        value: 2,
+        value: 10,
         index: 1
+      },
+      {
+        health: 10,
+        value: 30,
+        index: 3
       }
     ],
     spellNamesByGesture = {
@@ -64,7 +69,8 @@ var socketInterface = {
   'gesture': 'summon',
   'ready': 'playerReady',
   'request pause': 'requestPause',
-  'confirm pause': 'confirmPause'
+  'confirm pause': 'confirmPause',
+  'request gamestate': 'sendGameState'
 };
 
 function Game( id ){
@@ -97,12 +103,15 @@ function assignGamePrototypeMethods() {
   this.playerReady = playerReady;
   this.requestPause = requestPause;
   this.confirmPause = confirmPause;
+  this.sendGameState = sendGameState;
 }
 
 function play() {
+  this.sendGameState();
   this.room.emit( 'play' );
-  this.running = true;
+  this.started = this.running = true;
 
+  // bootstrap some content in
   var game = this;
   Object.keys( this.players ).forEach( function( id ) {
     var player = game.players[ id ];
@@ -193,6 +202,7 @@ function mobTick( mob, index, mobs, game, player ) {
     mob.speed = 0;
     damageDealt = stats.strength * modifiers.strength;
     closestResource.health -= damageDealt;
+    mobInfo.fighting = true;
 
     if( closestResource.health <= 0 ) {
       update.fieldResources[ closestResource.id ] = { died: true };
@@ -314,12 +324,20 @@ function joinGame( socket, name ) {
   console.log( this.playerKeys );
 
   player.direction = this.playerKeys.length === 1 ? 1 : -1;
+
+  this.room.emit( 'player joined', {
+    id: socket.id,
+    name: name,
+    direction: player.direction,
+    resources: player.resources
+  } );
   
   if( this.playerKeys.length === 2 ) {
     player.opponent = opponent = this.players[ this.playerKeys[ 0 ] ];
     opponent.opponent = player;
 
     sendableData.push( { id: opponent.socket.id, name: opponent.name, resources: opponent.resources, avatar: opponent.avatar } );
+    this.room.emit( 'remove invite' );
     this.room.emit( 'ready?' );
   }
 
@@ -344,7 +362,55 @@ function confirmPause( socket ) {
 function addScreen( socket ) {
   console.log( 'screen added' );
   this.screens[ socket.id ] = socket;
+
+  this.sendGameState( socket );
+
   this.room.emit( 'screen joined' );
+
+  if( !this.playerKeys || this.playerKeys.length === 1 ) socket.emit( 'show invite' );
+}
+
+function sendGameState( socket ) {
+  var game = this,
+      state = {};
+
+  if( !this.started ) return;
+  
+  Object.keys( this.players ).forEach( getData );
+  console.log( 'sending gamestate', state );
+  return ( socket || this.room ).emit( 'gamestate', state );
+
+  function getData( playerId ) {
+    var player = game.players[ playerId ],
+        playerState = state[ playerId ] = {
+          mobs: {},
+          fieldResources: {},
+          modifiers: player.modifiers
+        },
+        mobs = playerState.mobs,
+        fieldResources = playerState.fieldResources;
+
+    player.mobs.forEach( addMob );
+    player.fieldResources.forEach( addFieldResource );
+
+    return;
+
+    function addMob( mob ) {
+      mobs[ mob.id ] = {
+        type: mob.type,
+        position: mob.position,
+        health: mob.health,
+        fighting: mob.speed ? false : true
+      };
+    }
+
+    function addFieldResource( resource ) {
+      fieldResources[ resource.id ] = {
+        position: resource.position,
+        type: resource.type
+      };
+    }
+  }
 }
 
 function setSocketIO( _io ) {
