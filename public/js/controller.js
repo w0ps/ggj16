@@ -91,9 +91,7 @@ function updateViewResources(resources) {
   resources.forEach ( updateResource );
 
   function updateResource( resource ) {
-    console.log('resource_' + i);
     _resourceContainer = document.getElementById('resource_' + i);
-    console.log(_resourceContainer);
     _resourceContainer.innerHTML = resource;
     i++;
   } 
@@ -136,7 +134,8 @@ function update( data ) {
     currentPlayer = socket.nsp + socket.id == playerId,
     info = data[ playerId ],
     updateHandlers = {
-      resources: updateResources
+      resources: updateResources,
+      mobs: updateMobs
     };
 
     Object.keys( info ).forEach( processUpdate );
@@ -145,11 +144,21 @@ function update( data ) {
       ( updateHandlers[ key ] || console.log.bind( console, key ) ) ( info[ key ] );
     }
 
+    function updateMobs( mobs ) {
+      console.log(mobs);
+      // mobs.forEach( updateMob );
+    }
+
+    function updateMob( mob ) {
+      if (mob.finished && playerId == socket.nsp + '#' + socket.id) {
+        alert('Lose health');
+      }
+    }
+
     function updateResources( resources ) {
       if (playerId == socket.nsp + '#' + socket.id) {
         console.log('UPDATE RESOURCE!');
         console.log(resources);
-        console.log('UPDATE RESOURCES!');
         updateViewResources ( resources );
       }
       
