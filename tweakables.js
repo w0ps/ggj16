@@ -82,6 +82,8 @@ module.exports = {
       '-1': 'blue',
       '1': 'red'
     },
+    playerLife: 1,
+    startingResources: [ 100, 100, 100, 100 ],
     maxDistance: 100, //1000
     tickDelay: 1000 / 5,
     spriteWidth: 64,
@@ -90,5 +92,39 @@ module.exports = {
     playerNames: {
       '-1': 'light',
       '1': 'dark'
-    }
+    },
+    resourceDistribution: [
+      [
+        1/10,
+        2/10,
+        3/10
+      ]//,
+      // [
+      //   7/10,
+      //   8/10
+      //   9/10
+      // ]
+    ],
+    screenVictoryTexts: {
+      dark: [
+        'name eviscerated those goody two shoes',
+        'the light was extinguished forever by name',
+        'and thus a thousand years of darkness began'
+      ],
+      light: [
+        'name was happy that it was a good day after all',
+        'in a generous gesture, the enlightened ruler name let evil off with a friendly warning',
+        'puppies everywhere rejoice for they were saved by name'
+      ]
+    },
+    controllerVictoryTexts: [
+      'you did good enough',
+      'that was quite alright',
+      'I knew you would win!'
+    ],
+    controllerDefeatTexts: [
+      'you suck, seriously',
+      'keep on trying',
+      'I am so disappointed in you'
+    ]
 };
