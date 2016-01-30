@@ -44,7 +44,7 @@ module.exports = {
       '1': 'blue'
     },
     maxDistance: 100, //1000
-    tickDelay: 1000 / 2,
+    tickDelay: 1000 / 20,
     spriteWidth: 64,
     spriteHeight: 64,
     spriteYOffset: 8

@@ -88,12 +88,12 @@ function play() {
 
   // bootstrap some content in
   var game = this;
-  Object.keys( this.players ).forEach( function( id ) {
+  Object.keys( this.players ).forEach( function( id, i ) {
     var player = game.players[ id ];
     
-    game.summon( { id }, player.direction > 0 ? 'inverted pentagram' : 'pentagram' );
-    player.fieldResources.push( new Resource( 0, resourceStats[ 0 ], player.direction > 0 ? 3 : 17 ) );
-    game.summon( { id }, 'square' );
+    if( !i ) game.summon( { id }, player.direction > 0 ? 'inverted pentagram' : 'pentagram' );
+    player.fieldResources.push( new Resource( 0, resourceStats[ 0 ], player.direction > 0 ? 5 : tweakables.maxDistance - 5 ) );
+    //game.summon( { id }, 'square' );
   } );
 
   this.tick();
@@ -124,7 +124,6 @@ function tick() {
 
   this.playerKeys.forEach( _.partial( tickPlayer, _, this.players ) );
   this.playerKeys.forEach( _.partial( finishTurn, _, this.players, globalInfo ) );
-  console.log( JSON.stringify( globalInfo ) );
   this.room.emit( 'update', globalInfo );
 }
 
@@ -152,8 +151,6 @@ function mobTick( mob, index, mobs, game, player ) {
       enemyInfo,
       damageDealt, value, i,
       rStats, rIndex;
-
-  console.log( closestEnemy, closestEnemyPosition, closestEnemyDistance, closestEnemyInRange );
 
   if( closestEnemyInRange ) {
     mob.speed = 0;

@@ -1,7 +1,12 @@
+var spriteSheet;
+
 function initCallback() {
   socket.emit( 'screen joined' );
 
+  spriteSheet = document.getElementById( 'spritesheet' );
+
   window.game = new Game();
+
 }
 
 function Game() {
@@ -11,6 +16,8 @@ function Game() {
   this.fieldResources = {};
 
   this.contexts = setupGameView();
+
+  drawSprite( this.contexts.fg, spriteSheet, 0, 0, 64, 64, 8, 100, 100 );
 }
 
 function tick( updateData ) {
@@ -41,6 +48,10 @@ function tick( updateData ) {
     if( updatedMobs ) Object.keys( updatedMobs ).forEach( updateMob );
     if( updatedModifiers ) Object.keys( updatedModifiers ).forEach( applyModifier );
     if( updatedFieldResources ) Object.keys( updatedFieldResources ).forEach( updateFieldResource );
+    if( playerData.life !== undefined ) {
+      player.life = playerData.life;
+      alert( 'hurt!' );
+    }
 
     function updateMob( mobId ) {
       var mob = updatedMobs[ mobId ],
@@ -92,6 +103,7 @@ function tick( updateData ) {
   function tickAndDrawMob( mobId ) {
     var mob = mobs[ mobId ],
         speed = mob.speed * mob.player.modifiers.speed,
+        stats = mobStats[ mob.type ],
         x;
 
     mob.position += speed * mob.direction;
@@ -101,6 +113,8 @@ function tick( updateData ) {
 
     fg.fillStyle = colors[ mob.direction ];
     fg.fill();
+    //function drawSprite( context, image, column, row, spriteWidth, spriteHeight, spriteYOffset, x, y ) {
+    drawSprite( fg, spriteSheet, mob.type, 0, 64, 64, 8, x, 100 );
 
     if( mob.died ) delete mobs[ mobId ];
   }
@@ -237,4 +251,9 @@ function loadGameState( data ) {
 
     console.log( 'assets:', assets );
   }
+}
+
+function drawSprite( context, image, column, row, spriteWidth, spriteHeight, spriteYOffset, x, y ) {
+  console.log( ( x - spriteWidth / 2 ) * window.devicePixelRatio, ( y - spriteWidth / 2 + spriteYOffset ) * window.devicePixelRatio )
+  context.drawImage(image, column * spriteWidth, row * spriteHeight, spriteWidth, spriteHeight, x - spriteWidth , y - spriteWidth / 2 - spriteYOffset, spriteWidth * window.devicePixelRatio, spriteHeight * window.devicePixelRatio );
 }
