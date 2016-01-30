@@ -2,6 +2,7 @@ var express = require( 'express' ),
     app = express(),
     _ = require( 'underscore' ),
     fs = require( 'fs' ),
+    sprites = require( './sprites' ),
     io;
 
 var tweakables = require( './tweakables' ),
@@ -19,6 +20,7 @@ var Player = require( './player' ),
     Resource = require( './resource' );
 
 app.locals.tweakables = fs.readFileSync( './tweakables.js', 'utf8' );
+app.locals.sprites = sprites.loadBase64();
 
 app.get( '/:gameId', showGame );
 
