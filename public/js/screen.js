@@ -238,36 +238,3 @@ function loadGameState( data ) {
     console.log( 'assets:', assets );
   }
 }
-
-// function receiveUpdate( data ) {
-//   console.log( data );
-
-//   Object.keys( data ).forEach( updatePlayer );
-
-//   return;
-
-//   function updatePlayer( playerId ) {
-//     var player = game.players[ playerId ],
-//         info = data[ playerId ],
-//         updateHandlers = {
-//           resources: updateResources
-//         };
-
-//     Object.keys( info ).forEach( processUpdate );
-    
-//     function processUpdate( key ) {
-//       ( updateHandlers[ key ] || console.log.bind( console, key ) ) ( info[ key ] );
-//     }
-
-
-//     function updateResources( resources ) {
-//       resources.forEach( updateResource );
-
-//       console.log( resources );
-//     }
-
-//     function updateResource( value, index ) {
-//       if( value !== null ) player.resources[ index ] = value;
-//     }
-//   }
-// }
