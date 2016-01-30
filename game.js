@@ -27,13 +27,14 @@ var mobStats = [
       }
     ],
     spellNamesByGesture = {
-      square: 'strength'
+      square: 'slow'
     },
     spells = {
-      strength: {
+      slow: {
         cost: [ 1, 0, 0, 0 ],
         cast: function( player ) {
-          player.strengthModifier = 2;
+          player.opponent.update.modifiers = player.opponent.update.modifiers || {};
+          player.opponent.update.modifiers.speed = player.opponent.modifiers.speed /= 2;
         }
       }
     },
@@ -108,7 +109,7 @@ function play() {
     
     game.summon( { id }, player.direction > 0 ? 'inverted pentagram' : 'pentagram' );
     player.fieldResources.push( new Resource( 0, resourceStats[ 0 ], player.direction > 0 ? 3 : 17 ) );
-    //game.summon( { id }, 'square' );
+    game.summon( { id }, 'square' );
   } );
 
   this.tick();
@@ -120,22 +121,27 @@ function pause() {
 }
 
 function tick() {
-  var globalInfo;
+  var game = this,
+      globalInfo;
 
   if( !this.running ) return;
   setTimeout( this.tick.bind( this ), tickDelay );
 
   globalInfo = {};
 
-  this.playerKeys.forEach( playerId => this.players[ playerId ].update = {
-    mobs: {},
-    resources: this.players[ playerId ].update && this.players[ playerId ].update.resources || [],
-    fieldResources: {},
-    spells: {}
+  this.playerKeys.forEach( function( playerId ) {
+    var player = game.players[ playerId ];
+    player.update = _.extend( player.update || {}, {
+      mobs: player.update && player.update.mobs || {},
+      resources: player.update && player.update.resources || [],
+      fieldResources: {},
+      spells: {}
+    } );
   } );
+
   this.playerKeys.forEach( _.partial( tickPlayer, _, this.players ) );
   this.playerKeys.forEach( _.partial( finishTurn, _, this.players, globalInfo ) );
-console.log( globalInfo );
+  console.log( globalInfo );
   this.room.emit( 'update', globalInfo );
 }
 
@@ -144,7 +150,7 @@ function tickPlayer( playerId, players ) {
 }
 
 function mobTick( mob, index, mobs, game, player ) {
-  console.log( mob );
+  console.log( { mob: mob, pUpdate: player.update } );
   var stats = mobStats[ mob.type ],
       fieldResources = player.fieldResources,
       opponent = player.opponent,
@@ -257,7 +263,7 @@ function summon( socket, gesture ) {
       isMob = mobType > -1,
       spellName = spellNamesByGesture[ gesture ],
       cost = ( mobStats[ mobType ] || spells[ spellName ] || {} ).cost,
-      cantAfford = false;
+      cantAfford = false, newMob;
   
   if( !cost ) return socket.emit( 'unknown gesture' );
 
@@ -271,8 +277,17 @@ function summon( socket, gesture ) {
 
   cost.forEach( spendResource );
 
-  if( isMob ) player.mobs.unshift( new Mob( mobType, mobStats[ mobType ], player.direction > 0 ? 0 : maxDistance ) );
-  else spells[ spellName ].cast( player );
+  if( isMob ) {
+    newMob = new Mob( mobType, mobStats[ mobType ], player.direction > 0 ? 0 : maxDistance );
+    player.mobs.unshift( newMob );
+    player.update = player.update || {};
+    player.update.mobs = player.update.mobs || {};
+    player.update.mobs[ newMob.id ] = { created: true, position: newMob.position };
+  }
+  else {
+    player.opponent.update = player.opponent.update || {};
+    spells[ spellName ].cast( player );
+  }
 
   return;
 
@@ -284,6 +299,7 @@ function summon( socket, gesture ) {
 
   function spendResource( value, index ) {
     resources[ index ] -= value;
+    player.update.resources = player.update.resources || [];
     player.update.resources[ index ] = resources[ index ];
   }
 }
