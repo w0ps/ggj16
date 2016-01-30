@@ -23,6 +23,7 @@ function tick( updateData ) {
       mobs = game.mobs,
       fieldResources = game.fieldResources,
       mobStats = tweakables.mobStats,
+      baseline = tweakables.baseline,
       colors = tweakables.colors;
 
   Object.keys( updateData ).forEach( updatePlayerAssets );
@@ -51,7 +52,7 @@ function tick( updateData ) {
     function updateMob( mobId ) {
       var mob = updatedMobs[ mobId ],
           gameMob = game.mobs[ mobId ];
-      console.log( 'mob.died', mob.died );
+
       if( mob.created ) {
         if( gameMob ) console.log( 'weird this id already exists' );
         gameMob = game.mobs[ mobId ] = mob;
@@ -65,12 +66,7 @@ function tick( updateData ) {
         delete game.mobs[ mobId ];
       } else {
         gameMob = game.mobs[ mobId ];
-        Object.keys( mob ).forEach( function( property ) {
-          gameMob[ property ] = mob[ property ];
-        } );
-
-        // if( mob.damaged ) console.log( 'ouch: ' + mob.damaged );
-
+        Object.keys( mob ).forEach( copyProperty );
 
         if( mob.fighting ) {
           gameMob.fighting = true;
@@ -78,6 +74,10 @@ function tick( updateData ) {
         } else if( mob.fighting === false ) {
           gameMob.speed = mobStats[ gameMob.type ].speed;
           delete gameMob.fighting;
+        }
+
+        function copyProperty( property ) {
+          gameMob[ property ] = mob[ property ];
         }
       }
     }
@@ -103,16 +103,10 @@ function tick( updateData ) {
         x, row;
 
     mob.position += speed * mob.direction;
-    fg.beginPath();
     x = ( mob.position / tweakables.maxDistance ) * width;
-    fg.arc( x , 100, 10, 0, 2*Math.PI, false );
-
-    fg.fillStyle = colors[ mob.direction ];
-    fg.fill();
-    //function drawSprite( context, image, column, row, spriteWidth, spriteHeight, spriteYOffset, x, y ) {
 
     if( mob.died ) {
-      drawSprite( bg, sprite, mob.type, 4, 64, 64, 8, x, 100 );
+      drawSprite( bg, sprite, mob.type, 4, 64, 64, 8, x, baseline );
       delete mobs[ mobId ];
     } else {
       if( mob.speed ){
@@ -134,7 +128,7 @@ function tick( updateData ) {
         }
       }
 
-      drawSprite( fg, sprite, mob.type, row, 64, 64, 8, x, 100 );
+      drawSprite( fg, sprite, mob.type, row, 64, 64, 8, x, baseline );
     }
   }
 
@@ -143,17 +137,17 @@ function tick( updateData ) {
         row;
     x = ( fResource.position / tweakables.maxDistance ) * width;
 
-    fg.beginPath();
-    fg.arc( x, 100, 5, 0, 2*Math.PI, false );
-    fg.fillStyle = 'black';
-    fg.fill();
+    // fg.beginPath();
+    // fg.arc( x, 100, 5, 0, 2*Math.PI, false );
+    // fg.fillStyle = 'black';
+    // fg.fill();
 
     var spriteColumn = fResource.type + ( fResource.direction === -1 ? 1 : 0 );
 
     if( fResource.died ) {
       delete fieldResources[ resourceId ];
       row = 2;
-      drawSprite( bg, base64Sprites.fieldResources, spriteColumn, row, 64, 64, 8, x, 100 );
+      drawSprite( bg, base64Sprites.fieldResources, spriteColumn, row, 64, 64, 8, x, baseline );
     } else {
       if( fResource.firstFrame ) {
         row = 1;
@@ -162,7 +156,7 @@ function tick( updateData ) {
         row = 0;
         fResource.firstFrame = true;
       }
-      drawSprite( fg, base64Sprites.fieldResources, spriteColumn, row, 64, 64, 8, x, 100 );
+      drawSprite( fg, base64Sprites.fieldResources, spriteColumn, row, 64, 64, 8, x, baseline );
     }
   }
 }
@@ -174,7 +168,8 @@ socketHandlers = {
   'play' : play,
   'pause' : pause,
   'gamestate' : loadGameState,
-  'update': tick
+  'update': tick,
+  'victory': handleVictory
 };
 
 document.addEventListener( 'DOMContentLoaded', init );
@@ -201,13 +196,15 @@ function removeQRInvite() {
   document.getElementById( 'qrcode' ).textContent = '';
 }
 
-function setupGameView( data ) {
-  data = data || {};
-  var width = data.width || 600,
-      height = data.height || 200,
+function setupGameView() {
+  var background = base64Sprites.background,
+      width = background.width,
+      height = background.height,
       canvasBg = document.createElement( 'canvas' ),
       canvasFg = document.createElement( 'canvas' ),
-      gameContainer = document.getElementById( 'game-container' );
+      gameContainer = document.getElementById( 'game-container' ),
+      bg, fg,
+      api;
 
   canvasBg.width = width * window.devicePixelRatio;
   canvasFg.width = width * window.devicePixelRatio;
@@ -222,13 +219,23 @@ function setupGameView( data ) {
   gameContainer.appendChild( canvasBg );
   gameContainer.appendChild( canvasFg );
 
-  return {
-    bg: canvasBg.getContext( '2d' ),
-    fg: canvasFg.getContext( '2d' ),
+  bg = canvasBg.getContext( '2d' );
+  fg = canvasFg.getContext( '2d' );
+
+  api = {
+    bg: bg,
+    fg: fg,
     width: width,
     height: height,
     center: [ width / 2, height / 2 ]
   };
+
+  bg.drawImage( base64Sprites.background, 0, 0, width, height, 0, 0, width * devicePixelRatio, height * devicePixelRatio );
+
+  bg.drawImage( base64Sprites.treeDark, 0, 0, 128, 128, tweakables.leftTreeX * devicePixelRatio, tweakables.baseline - 200, 128 * devicePixelRatio, 128 * devicePixelRatio);
+  bg.drawImage( base64Sprites.treeLight, 0, 0, 128, 128, ( width + tweakables.rightTreeX ) * devicePixelRatio, tweakables.baseline - 200, 128 * devicePixelRatio, 128 * devicePixelRatio );
+
+  return api;
 }
 
 function play() {
@@ -238,6 +245,10 @@ function play() {
 
 function pause() {
   console.log( 'pausing' );
+}
+
+function handleVictory( socketId ) {
+  console.log( 'victory!' + socketId );
 }
 
 var gotGamestate;
@@ -290,6 +301,5 @@ function loadGameState( data ) {
 }
 
 function drawSprite( context, image, column, row, spriteWidth, spriteHeight, spriteYOffset, x, y ) {
-  console.log( ( x - spriteWidth / 2 ) * window.devicePixelRatio, ( y - spriteWidth / 2 + spriteYOffset ) * window.devicePixelRatio )
   context.drawImage(image, column * spriteWidth, row * spriteHeight, spriteWidth, spriteHeight, x - spriteWidth , y - spriteWidth - spriteYOffset, spriteWidth * window.devicePixelRatio, spriteHeight * window.devicePixelRatio );
 }

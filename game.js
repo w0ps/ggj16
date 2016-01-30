@@ -80,30 +80,59 @@ function assignGamePrototypeMethods() {
   this.requestPause = requestPause; // when a player wants to pause
   this.confirmPause = confirmPause; // when other player agrees to pause
   this.sendGameState = sendGameState; // when new clients want to know everything
+  this.finish = finish; // for the win
+  this.createFieldResources = createFieldResources;
 }
 
 function play() {
   console.log( 'play' );
   this.sendGameState();
   this.room.emit( 'play' );
+
+  if( !this.started ) this.createFieldResources();
   this.started = this.running = true;
 
   // bootstrap some content in
   var game = this;
+  
   Object.keys( this.players ).forEach( function( id, i ) {
     var player = game.players[ id ];
     
-    if(true || !i ) game.summon( { id }, player.direction > 0 ? 'inverted pentagram' : 'pentagram' );
-    player.fieldResources.push( new Resource( 0, resourceStats[ 0 ], player.direction > 0 ? 10 : tweakables.maxDistance - 10 ) );
+    if( !i ) game.summon( { id }, player.direction > 0 ? 'inverted pentagram' : 'pentagram' );
+    //player.fieldResources.push( new Resource( 0, resourceStats[ 0 ], player.direction > 0 ? 10 : tweakables.maxDistance - 10 ) );
     //game.summon( { id }, 'square' );
   } );
 
   this.tick();
 }
 
+function createFieldResources() {
+  var game = this;
+
+  Object.keys( this.players ).forEach( createResourcesForPlayer );
+
+  function createResourcesForPlayer( playerId ) {
+    var player = game.players[ playerId ];
+    tweakables.resourceDistribution.forEach( createResourceGroupForPlayer );
+
+    function createResourceGroupForPlayer( locations, i ) {
+      locations.forEach( addFieldResource );
+
+      function addFieldResource( position ) {
+        player.fieldResources.push( new Resource( i, resourceStats[ i ], player.direction > 0 ? position * maxDistance : tweakables.maxDistance - position * maxDistance ) );
+      }
+    }
+  }
+}
+
 function pause() {
   this.running = false;
   this.room.emit( 'paused' );
+}
+
+function finish( playerId ) {
+  this.running = false;
+  this.room.emit( 'victory', playerId );
 }
 
 function tick() {
@@ -126,6 +155,9 @@ function tick() {
 
   this.playerKeys.forEach( _.partial( tickPlayer, _, this.players ) );
   this.playerKeys.forEach( _.partial( finishTurn, _, this.players, globalInfo ) );
+
+  console.log( JSON.stringify( globalInfo, null, 2 ) );
+
   this.room.emit( 'update', globalInfo );
 }
 
