@@ -59,12 +59,22 @@ function update( data ) {
 
 	function updatePlayer( playerId ) {
 		var player = players[ playerId ],
-				info = data[ playerId ];
-		
-		if( info.resources ) {
-			info.resources.forEach( updateResource );
+				info = data[ playerId ],
+				updateHandlers = {
+					resources: updateResources
+				}
 
-			console.log( info.resources );
+		Object.keys( info ).forEach( processUpdate );
+		
+		function processUpdate( key ) {
+			( updateHandlers[ key ] || console.log.bind( console, key ) ) ( info[ key ] );
+		}
+
+
+		function updateResources( resources ) {
+			resources.forEach( updateResource );
+
+			console.log( resources );
 		}
 
 		function updateResource( value, index ) {
