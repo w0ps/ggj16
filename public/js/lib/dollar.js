@@ -123,6 +123,7 @@ function DollarRecognizer(gestures) {
 	var i, gesture; 
 	for (i in gestures) {
 		gesture = gestures[i];
+		gesture.points = gesture.points.map(function (point) { return new Point(point[0], point[1]) });
 		this.Unistrokes.push(new Unistroke(gesture.name, gesture.points));
 	};
 
