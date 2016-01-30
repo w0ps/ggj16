@@ -12,12 +12,28 @@ function init(){
 	socket.on( 'ready?', areYouReady );
 
 	socket.on( 'play', showPlay );
+
+	socket.on( 'requestPause', confirmPause );
+	
+	socket.on( 'paused', pause );
 }
 
 function areYouReady( customMessage ) {
-	if( prompt( customMessage || 'are you ready?' ) ) socket.emit( 'ready' );
+	if( true || prompt( customMessage || 'are you ready?' ) ) socket.emit( 'ready' );
 }
 
 function showPlay() {
 	console.log( 'play' );
+}
+
+function askPause() {
+	socket.emit( 'request pause' );
+}
+
+function confirmPause( customMsg ) {
+	if( confirm( customMsg || 'do you agree to pause the game?' ) ) socket.emit( 'confirm pause' );
+}
+
+function pause() {
+	console.log( 'pause...' );
 }

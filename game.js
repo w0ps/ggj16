@@ -31,9 +31,10 @@ var mobStats = [
       }
     },
     maxDistance = 1000,
-    tickDelay = 1000 / 2;
+    tickDelay = 1000 / 0.5;
 
-var Player = require( './player' );
+var Player = require( './player' ),
+    Mob = require( './mob' );
 
 app.get( '/:gameId', showGame );
 
@@ -48,6 +49,15 @@ function getGame( gameId ) {
   return games[ gameId ] || new Game( gameId );
 }
 
+var socketInterface = {
+  'screen joined': 'addScreen',
+  'controller joined': 'join',
+  'gesture': 'summon',
+  'ready': 'playerReady',
+  'request pause': 'requestPause',
+  'confirm pause': 'confirmPause'
+};
+
 function Game( id ){
   var game = this;
   games[ id ] = this;
@@ -56,13 +66,13 @@ function Game( id ){
   this.screens = {};
   this.room = io.of( '/' + id );
   this.room.on( 'connection', function( socket ){
-    socket.on( 'screen joined', game.addScreen.bind( game, socket ) );
+    Object.keys( socketInterface ).forEach( registerSocketHandler );
 
-    socket.on( 'controller joined', game.join.bind( game, socket ) );
-
-    socket.on( 'gesture', game.summon.bind( game, socket ) );
-
-    socket.on( 'ready', game.playerReady.bind( game, socket ) );
+    function registerSocketHandler( eventName ) {
+      var handler = game[ socketInterface[ eventName ] ];
+      if( !handler ) return console.error( eventName + 'not found' );
+      socket.on( eventName, game[ socketInterface[ eventName ] ].bind( game, socket ) );
+    }
   } );
 }
 
@@ -70,17 +80,31 @@ assignGamePrototypeMethods.call( Game.prototype );
 
 function assignGamePrototypeMethods() {
   this.play = play;
+  this.pause = pause;
   this.tick = tick;
   this.summon = summon;
   this.addScreen = addScreen;
   this.join = joinGame;
   this.playerReady = playerReady;
+  this.requestPause = requestPause;
+  this.confirmPause = confirmPause;
 }
 
 function play() {
   this.room.emit( 'play' );
   this.running = true;
+
+  var game = this;
+  Object.keys( this.players ).forEach( function( id ) {
+    game.summon( { id }, 'pentagram' );
+  } );
+
   this.tick();
+}
+
+function pause() {
+  this.running = false;
+  this.room.emit( 'paused' );
 }
 
 function tick() {
@@ -98,20 +122,21 @@ function tick() {
 }
 
 function tickPlayer( playerId, players ) {
-  mobs.forEach( _.partial( mobTick, _, _, _, this, players[ playerId ] ) );
+  players[ playerId ].mobs.forEach( _.partial( mobTick, _, _, _, this, players[ playerId ] ) );
 }
 
 function mobTick( mob, index, mobs, game, player ) {
+  console.log( mob );
   var stats = mobStats[ mob.type ],
       fieldResources = player.fieldResources,
       opponent = player.opponent,
-      enemies = opponent.enemies,
+      enemies = opponent.mobs,
       range = stats.range,
       mobPosition = mob.position,
       closestEnemy = enemies[ enemies.length - 1 ],
       closestEnemyPosition = closestEnemy ? closestEnemy.position : null,
       closestEnemyDistance = closestEnemyPosition ? Math.abs( mobPosition - closestEnemyPosition ) : null,
-      closestResource = resources[ 0 ],
+      closestResource = player.resources[ 0 ],
       closestResourceDistance = closestResource ? Math.abs( mobPosition - closestResource.position ) : null,
       mobInfo = player.update.mobs[ mob.id ] || {},
       enemyInfo,
@@ -166,25 +191,28 @@ function mobTick( mob, index, mobs, game, player ) {
   }
 
   // only store update info if something happened worth noting
-  if( Object.keys( mobInfo ).length ) info[ mob.id ] = mobInfo;
+  if( Object.keys( mobInfo ).length ) player.update[ mob.id ] = mobInfo;
 }
 
 function finishTurn( playerId, players, info ) {
   var mobs = players[ playerId ].mobs;
   
-  while( mobs[ mobs.length - 1 ].dead ) mobs.pop();
+  while( mobs.length && mobs[ mobs.length - 1 ].dead ) mobs.pop();
 }
 
 function summon( socket, gesture ) {
+  console.log( gesture );
   var player = this.players[ socket.id ],
       resources = player.resources,
       mobType = player.direction > 0 ? gesturesDark.indexOf( gesture ) : gesturesLight.indexOf( gesture ),
       isMob = mobType > -1,
-      spellName = isMob && spellNamesByGesture[ gesture ],
-      cost = ( isMob ? mobStats[ mobType ].cost : spells[ spellName ].cost ) * ( player.costModifier || 1 ),
+      spellName = spellNamesByGesture[ gesture ],
+      cost = ( mobStats[ mobType ] || spells[ spellName ] || {} ).cost,
       cantAfford = false;
+  
+  if( !cost ) return socket.emit( 'unknown gesture' );
 
-  cost.forEach( evaluateResouces );
+  cost.forEach( evaluateResources );
 
   if( cantAfford ) return socket.emit( 'cannot afford' );
 
@@ -224,6 +252,15 @@ function playerReady( socket ) {
   var player = this.players[ socket.id ];
   player.ready = true;
   if( player.opponent.ready ) this.play();
+}
+
+function requestPause( socket ) {
+  this.players[ socket.id ].opponent.socket.emit( 'requestPause' );
+}
+
+function confirmPause( socket ) {
+  if( !this.players[ socket.id ] ) return;
+  this.pause();
 }
 
 function addScreen( socket ) {
