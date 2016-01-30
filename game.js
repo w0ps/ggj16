@@ -17,9 +17,8 @@ var tweakables = require( './tweakables' ),
 var Player = require( './player' ),
     Mob = require( './mob' ),
     Resource = require( './resource' );
-console.log(fs.readFileSync( './tweakables.js', 'utf8' ));
+
 app.locals.tweakables = fs.readFileSync( './tweakables.js', 'utf8' );
-console.log( app.locals.tweakables );
 
 app.get( '/:gameId', showGame );
 
@@ -64,20 +63,25 @@ function Game( id ){
 
 assignGamePrototypeMethods.call( Game.prototype );
 
+// controller sequence:
+// 
+
+
 function assignGamePrototypeMethods() {
-  this.play = play;
-  this.pause = pause;
-  this.tick = tick;
-  this.summon = summon;
-  this.addScreen = addScreen;
-  this.join = joinGame;
-  this.playerReady = playerReady;
-  this.requestPause = requestPause;
-  this.confirmPause = confirmPause;
-  this.sendGameState = sendGameState;
+  this.play = play; // unpauses or starts the game
+  this.pause = pause; // sets game.running to false
+  this.tick = tick; // causes the game to tick
+  this.summon = summon; // creates mobs or effects
+  this.addScreen = addScreen; // when a desktop joins
+  this.join = joinGame; // when a device joins
+  this.playerReady = playerReady; // when a player signals ready
+  this.requestPause = requestPause; // when a player wants to pause
+  this.confirmPause = confirmPause; // when other player agrees to pause
+  this.sendGameState = sendGameState; // when new clients want to know everything
 }
 
 function play() {
+  console.log( 'play' );
   this.sendGameState();
   this.room.emit( 'play' );
   this.started = this.running = true;
@@ -284,6 +288,7 @@ function summon( socket, gesture ) {
 }
 
 function joinGame( socket, name ) {
+  console.log( 'joinGame!!' );
   if( Object.keys( this.players ).length === 2 ) return socket.emit( 'game full' );
 
   var player = this.players[ socket.id ] = new Player( this, socket, name ),
@@ -292,7 +297,7 @@ function joinGame( socket, name ) {
 
   this.playerKeys = Object.keys( this.players );
 
-  console.log( this.playerKeys );
+  console.log( 'joinGame', this.playerKeys );
 
   player.direction = this.playerKeys.length === 1 ? 1 : -1;
 
@@ -308,14 +313,15 @@ function joinGame( socket, name ) {
     opponent.opponent = player;
 
     sendableData.push( { id: opponent.socket.id, name: opponent.name, resources: opponent.resources, avatar: opponent.avatar } );
-    this.room.emit( 'remove invite' );
     this.room.emit( 'ready?' );
+    this.room.emit( 'remove invite' );
   }
 
   this.room.emit( 'players', sendableData );
 }
 
 function playerReady( socket ) {
+  console.log( 'playReady' );
   var player = this.players[ socket.id ];
   player.ready = true;
   if( player.opponent.ready ) this.play();
@@ -342,6 +348,7 @@ function addScreen( socket ) {
 }
 
 function sendGameState( socket ) {
+  console.log( 'sendGameState' );
   var game = this,
       state = {};
 
