@@ -79,14 +79,22 @@ canvas {
     margin: 0;
 }
 
+#settings img, p {
+    height: 20px;
+    display: inline-block;
+}
+
+#settings img {
+    width: 24px;
+}
+
 #settings p {
     margin: 0;
     display: inline-block;
 }
 
-#settings p:first-child {
+#settings p:nth-child(2) {
     border-right: 2px solid #000;
     padding-right: 10px;
     margin-right: 10px;
-}
 }
