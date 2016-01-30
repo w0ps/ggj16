@@ -77,7 +77,26 @@ function playerJoined( playerData ) {
       resources: playerData.resources,
       avatar: playerData.avatar
     };
+
+    if (playerData.id == socket.nsp + '#' + socket.id) {
+      updateViewResources(playerData.resources );
+    }
   }
+}
+
+function updateViewResources(resources) {
+  var i = 0,
+      _resourceContainer;
+
+  resources.forEach ( updateResource );
+
+  function updateResource( resource ) {
+    console.log('resource_' + i);
+    _resourceContainer = document.getElementById('resource_' + i);
+    console.log(_resourceContainer);
+    _resourceContainer.innerHTML = resource;
+    i++;
+  } 
 }
 
 function areYouReady( customMessage ) {
@@ -114,6 +133,7 @@ function update( data ) {
 
   function updatePlayer( playerId ) {
     var player = players[ playerId ],
+    currentPlayer = socket.nsp + socket.id == playerId,
     info = data[ playerId ],
     updateHandlers = {
       resources: updateResources
@@ -126,6 +146,13 @@ function update( data ) {
     }
 
     function updateResources( resources ) {
+      if (playerId == socket.nsp + '#' + socket.id) {
+        console.log('UPDATE RESOURCE!');
+        console.log(resources);
+        console.log('UPDATE RESOURCES!');
+        updateViewResources ( resources );
+      }
+      
       resources.forEach( updateResource );
 
       console.log( resources );

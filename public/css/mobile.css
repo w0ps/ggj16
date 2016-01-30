@@ -20,7 +20,7 @@ canvas {
 }
 
 #health img {
-    max-width: 50px;
+    max-width: 25px;
 }
 
 .preview {
@@ -38,7 +38,7 @@ canvas {
     display: flex;
     height: 40%;
 }
-.resource {
+.resources span {
     width: 25%;
 }
 
