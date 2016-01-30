@@ -193,7 +193,7 @@ function createQRInvite() {
 }
 
 function removeQRInvite() {
-  document.getElementById( 'qrcode' ).textContent = '';
+  document.getElementById( 'qrcode' ).style.display = 'none';
 }
 
 function setupGameView() {
