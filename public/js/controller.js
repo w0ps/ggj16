@@ -73,11 +73,17 @@ function playerJoined( playerData ) {
     if (playerData.id == socket.nsp + '#' + socket.id) {
       updateViewResources( playerData.resources );
       if (_r === undefined) {
-        var gestures = playerCount === 1 ? gesturesLightPatterns : gesturesDarkPatterns;
+        var gestures = playerCount === 1 ? gesturesDarkPatterns : gesturesLightPatterns;
+        updateSettings(playerCount === 1 ? 'Dark' : 'Light');
         createPatternRecognizer( gestures );
       }
     }
   }
+}
+
+function updateSettings( side ) {
+  var playerSideContainer = document.getElementById('playerSide');
+  playerSideContainer.innerHTML = side;
 }
 
 function createPatternRecognizer( gestures ) {
