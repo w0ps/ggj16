@@ -1,4 +1,4 @@
-var shortId = require( 'shortId' );
+var shortId = require( 'shortid' );
 
 function Mob( type, stats, position ) {
 	this.type = type;

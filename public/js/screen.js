@@ -1,13 +1,16 @@
+
 function initCallback() {
   socket.emit( 'screen joined' );
 
   window.game = new Game();
+
 }
 
 function Game() {
   this.players = {};
   this.mobs = {};
   this.resources = {};
+  this.fieldResources = {};
 
   this.contexts = setupGameView();
 }
@@ -15,54 +18,78 @@ function Game() {
 function tick( updateData ) {
   var fg = game.contexts.fg,
       bg = game.contexts.bg,
+      width = game.contexts.width * devicePixelRatio,
+      height = game.contexts.height * devicePixelRatio,
       mobs = game.mobs,
+      fieldResources = game.fieldResources,
       mobStats = tweakables.mobStats,
       colors = tweakables.colors;
 
   Object.keys( updateData ).forEach( updatePlayerAssets );
 
-  fg.clearRect( 0, 0, game.contexts.width * window.devicePixelRatio, game.contexts.height * window.devicePixelRatio);
+  fg.clearRect( 0, 0, width, height );
 
   Object.keys( mobs ).forEach( tickAndDrawMob );
+  Object.keys( fieldResources ).forEach( drawFieldResource );
 
   function updatePlayerAssets( playerId ) {
     var playerData = updateData[ playerId ],
         player = game.players[ playerId ],
         direction = player.direction,
-        mobs = playerData.mobs;
+        updatedMobs = playerData.mobs,
+        updatedModifiers = playerData.modifiers,
+        updatedFieldResources = playerData.fieldResources;
 
-    if( mobs ) Object.keys( mobs ).forEach( updateMob );
+    if( updatedMobs ) Object.keys( updatedMobs ).forEach( updateMob );
+    if( updatedModifiers ) Object.keys( updatedModifiers ).forEach( applyModifier );
+    if( updatedFieldResources ) Object.keys( updatedFieldResources ).forEach( updateFieldResource );
+    if( playerData.life !== undefined ) {
+      player.life = playerData.life;
+      alert( 'hurt!' );
+    }
 
     function updateMob( mobId ) {
-      var mob = mobs[ mobId ],
+      var mob = updatedMobs[ mobId ],
           gameMob = game.mobs[ mobId ];
+      console.log( 'mob.died', mob.died );
       if( mob.created ) {
         if( gameMob ) console.log( 'weird this id already exists' );
         gameMob = game.mobs[ mobId ] = mob;
         delete mob.created;
         gameMob.direction = direction;
         gameMob.speed = mobStats[ mob.type ].speed;
+        gameMob.player = player;
       } else if( mob.died ){
-        alert( 'died!' );
         gameMob.died = true;
+      } else if( mob.finished ) {
+        delete game.mobs[ mobId ];
       } else {
         gameMob = game.mobs[ mobId ];
         Object.keys( mob ).forEach( function( property ) {
           gameMob[ property ] = mob[ property ];
         } );
 
-        if( mob.damaged ) console.log( 'ouch: ' + mob.damaged );
+        // if( mob.damaged ) console.log( 'ouch: ' + mob.damaged );
 
-        console.log( gameMob );
 
         if( mob.fighting ) {
           gameMob.fighting = true;
           gameMob.speed = 0;
-        } else if( !mob.fighting ) {
+        } else if( mob.fighting === false ) {
           gameMob.speed = mobStats[ gameMob.type ].speed;
           delete gameMob.fighting;
         }
       }
+    }
+
+    function applyModifier( modifierName ) {
+      player.modifiers[ modifierName ] = updatedModifiers[ modifierName ];
+    }
+
+    function updateFieldResource( fieldResourceId ) {
+      var fieldResource = fieldResources[ fieldResourceId ],
+          updatedFieldResource = updatedFieldResources[ fieldResourceId ];
+      if( updatedFieldResource.died ) fieldResource.died = true;
     }
 
     //console.log( 'updatefun', updateData[ playerId ] );
@@ -70,16 +97,73 @@ function tick( updateData ) {
 
   function tickAndDrawMob( mobId ) {
     var mob = mobs[ mobId ],
-        speed = mob.speed;
+        speed = mob.speed * mob.player.modifiers.speed,
+        stats = mobStats[ mob.type ],
+        sprite = base64Sprites[ tweakables.playerNames[ mob.direction ] ],
+        x, row;
 
     mob.position += speed * mob.direction;
     fg.beginPath();
-    fg.arc( mob.position * 30 , 100, 10, 0, 2*Math.PI, false );
+    x = ( mob.position / tweakables.maxDistance ) * width;
+    fg.arc( x , 100, 10, 0, 2*Math.PI, false );
 
     fg.fillStyle = colors[ mob.direction ];
     fg.fill();
+    //function drawSprite( context, image, column, row, spriteWidth, spriteHeight, spriteYOffset, x, y ) {
 
-    if( mob.died ) delete mobs[ mobId ];
+    if( mob.died ) {
+      drawSprite( bg, sprite, mob.type, 4, 64, 64, 8, x, 100 );
+      delete mobs[ mobId ];
+    } else {
+      if( mob.speed ){
+        if( mob.firstMoveFrame ) {
+          row = 1;
+          mob.firstMoveFrame = false;
+        }
+        else {
+          row = 0;
+          mob.firstMoveFrame = true;
+        }
+      } else {
+        if( mob.firstAttackFrame ) {
+          row = 3;
+          mob.firstAttackFrame = false;
+        } else {
+          row = 2;
+          mob.firstAttackFrame = true;
+        }
+      }
+
+      drawSprite( fg, sprite, mob.type, row, 64, 64, 8, x, 100 );
+    }
+  }
+
+  function drawFieldResource( resourceId ) {
+    var fResource = fieldResources[ resourceId ],
+        row;
+    x = ( fResource.position / tweakables.maxDistance ) * width;
+
+    fg.beginPath();
+    fg.arc( x, 100, 5, 0, 2*Math.PI, false );
+    fg.fillStyle = 'black';
+    fg.fill();
+
+    var spriteColumn = fResource.type + ( fResource.direction === -1 ? 1 : 0 );
+
+    if( fResource.died ) {
+      delete fieldResources[ resourceId ];
+      row = 2;
+      drawSprite( bg, base64Sprites.fieldResources, spriteColumn, row, 64, 64, 8, x, 100 );
+    } else {
+      if( fResource.firstFrame ) {
+        row = 1;
+        fResource.firstFrame = false;
+      } else {
+        row = 0;
+        fResource.firstFrame = true;
+      }
+      drawSprite( fg, base64Sprites.fieldResources, spriteColumn, row, 64, 64, 8, x, 100 );
+    }
   }
 }
 
@@ -166,20 +250,38 @@ function loadGameState( data ) {
   function updatePlayerAssets( id ) {
     var player = game.players[ id ],
         direction = player.direction,
-        assets = data[ id ];
+        assets = data[ id ],
+        mobs = assets.mobs,
+        fieldResources = assets.fieldResources;
 
-    Object.keys( assets.mobs ).forEach( fixMob );
+    Object.keys( mobs ).forEach( fixMob );
+    Object.keys( fieldResources ).forEach( fixResource );
 
     function fixMob( mobId ) {
-      var mob = game.mobs[ mobId ];
+      var mob = game.mobs[ mobId ],
+          updateMob;
 
       if( !mob ) {
-        mob = game.mobs[ mobId ] = assets.mobs[ mobId ];
+        mob = game.mobs[ mobId ] = mobs[ mobId ];
         mob.direction = direction;
+        mob.player = player;
       } else {
-        mob.position = assets.mobs[ mobId ].position;
-        mob.health = assets.mobs[ mobId ].health;
-        mob.fighting = assets.mobs[ mobId ].fighting;
+        updateMob = mobs[ mobId ];
+        mob.position = updateMob.position;
+        mob.health = updateMob.health;
+        mob.fighting = updateMob.fighting;
+      }
+    }
+
+    function fixResource( resourceId ) {
+      var fResource = game.fieldResources[ resourceId ];
+
+      if( !fResource ) {
+        fResource = game.fieldResources[ resourceId ] = fieldResources[ resourceId ];
+        fResource.direction = direction;
+      } else {
+        fResource.health = fieldResources[ resourceId ];
+        fResource.died = fieldResources[ resourceId ];
       }
     }
 
@@ -187,35 +289,7 @@ function loadGameState( data ) {
   }
 }
 
-// function receiveUpdate( data ) {
-//   console.log( data );
-
-//   Object.keys( data ).forEach( updatePlayer );
-
-//   return;
-
-//   function updatePlayer( playerId ) {
-//     var player = game.players[ playerId ],
-//         info = data[ playerId ],
-//         updateHandlers = {
-//           resources: updateResources
-//         };
-
-//     Object.keys( info ).forEach( processUpdate );
-    
-//     function processUpdate( key ) {
-//       ( updateHandlers[ key ] || console.log.bind( console, key ) ) ( info[ key ] );
-//     }
-
-
-//     function updateResources( resources ) {
-//       resources.forEach( updateResource );
-
-//       console.log( resources );
-//     }
-
-//     function updateResource( value, index ) {
-//       if( value !== null ) player.resources[ index ] = value;
-//     }
-//   }
-// }
+function drawSprite( context, image, column, row, spriteWidth, spriteHeight, spriteYOffset, x, y ) {
+  console.log( ( x - spriteWidth / 2 ) * window.devicePixelRatio, ( y - spriteWidth / 2 + spriteYOffset ) * window.devicePixelRatio )
+  context.drawImage(image, column * spriteWidth, row * spriteHeight, spriteWidth, spriteHeight, x - spriteWidth , y - spriteWidth - spriteYOffset, spriteWidth * window.devicePixelRatio, spriteHeight * window.devicePixelRatio );
+}

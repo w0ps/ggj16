@@ -29,6 +29,7 @@ function assignPlayerPrototypeMethods() {
 
 function inflictDamage() {
 	if( --this.life === 0 ) this.die();
+	this.update.life = this.life;
 }
 
 function die(){

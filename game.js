@@ -90,12 +90,12 @@ function play() {
 
   // bootstrap some content in
   var game = this;
-  Object.keys( this.players ).forEach( function( id ) {
+  Object.keys( this.players ).forEach( function( id, i ) {
     var player = game.players[ id ];
     
-    game.summon( { id }, player.direction > 0 ? 'inverted pentagram' : 'pentagram' );
-    player.fieldResources.push( new Resource( 0, resourceStats[ 0 ], player.direction > 0 ? 3 : 17 ) );
-    game.summon( { id }, 'square' );
+    if(true || !i ) game.summon( { id }, player.direction > 0 ? 'inverted pentagram' : 'pentagram' );
+    player.fieldResources.push( new Resource( 0, resourceStats[ 0 ], player.direction > 0 ? 10 : tweakables.maxDistance - 10 ) );
+    //game.summon( { id }, 'square' );
   } );
 
   this.tick();
@@ -126,7 +126,6 @@ function tick() {
 
   this.playerKeys.forEach( _.partial( tickPlayer, _, this.players ) );
   this.playerKeys.forEach( _.partial( finishTurn, _, this.players, globalInfo ) );
-  console.log( globalInfo );
   this.room.emit( 'update', globalInfo );
 }
 
@@ -160,6 +159,8 @@ function mobTick( mob, index, mobs, game, player ) {
     damageDealt = stats.strength * modifiers.strength;
     closestEnemy.health -= damageDealt;
     mobInfo.fighting = true;
+    console.log( 'fighting other mob' );
+    //process.exit();
 
     if( enemyInfo = player.opponent.update.mobs[ closestEnemy.id ] ) {
       
@@ -193,9 +194,12 @@ function mobTick( mob, index, mobs, game, player ) {
       fieldResources.shift();
     }
   }
-  else {
-    mob.speed = stats.speed * player.modifiers.speed * player.direction;
-    if( mob.speed === 0 ) mobInfo.fighting = false;
+  else { // move mob;
+    if( mob.speed === 0 ) {
+      mobInfo.fighting = false;
+    }
+
+    if( !mob.speed ) mob.speed = stats.speed * player.modifiers.speed * player.direction;
 
     if( mobPosition + mob.speed < 0 || mobPosition + mob.speed > maxDistance ) {
       player.opponent.inflictDamage();
@@ -309,7 +313,8 @@ function joinGame( socket, name ) {
     id: socket.id,
     name: name,
     direction: player.direction,
-    resources: player.resources
+    resources: player.resources,
+    modifiers: player.modifiers
   } );
   
   if( this.playerKeys.length === 2 ) {
