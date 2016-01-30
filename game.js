@@ -19,6 +19,13 @@ var mobStats = [
     gesturesLight = [
       'pentagram'
     ],
+    resourceStats = [
+      {
+        health: 2,
+        value: 2,
+        index: 1
+      }
+    ],
     spellNamesByGesture = {
       square: 'strength'
     },
@@ -34,7 +41,8 @@ var mobStats = [
     tickDelay = 1000 / 0.5;
 
 var Player = require( './player' ),
-    Mob = require( './mob' );
+    Mob = require( './mob' ),
+    Resource = require( './resource' );
 
 app.get( '/:gameId', showGame );
 
@@ -96,7 +104,11 @@ function play() {
 
   var game = this;
   Object.keys( this.players ).forEach( function( id ) {
-    game.summon( { id }, game.players[ id ].direction > 0 ? 'inverted pentagram' : 'pentagram' );
+    var player = game.players[ id ];
+    
+    game.summon( { id }, player.direction > 0 ? 'inverted pentagram' : 'pentagram' );
+    player.fieldResources.push( new Resource( 0, resourceStats[ 0 ], player.direction > 0 ? 3 : 17 ) );
+    //game.summon( { id }, 'square' );
   } );
 
   this.tick();
@@ -138,12 +150,14 @@ function mobTick( mob, index, mobs, game, player ) {
       closestEnemyPosition = closestEnemy && closestEnemy.position,
       closestEnemyDistance = closestEnemyPosition !== undefined && Math.abs( mobPosition - closestEnemyPosition ),
       closestEnemyInRange = closestEnemy !== undefined && closestEnemyDistance <= range,
-      closestResource = !closestEnemyInRange && player.resources[ 0 ],
+      closestResource = !closestEnemyInRange && fieldResources[ 0 ],
       closestResourceDistance = closestResource && Math.abs( mobPosition - closestResource.position ),
-      closestResourceInRange = closestResource && closestResourceDistance  <= range,
-      mobInfo = player.update.mobs[ mob.id ] || {},
+      closestResourceInRange = closestResource && closestResourceDistance <= range,
+      update = player.update,
+      mobInfo = update.mobs[ mob.id ] || {},
       enemyInfo,
-      damageDealt, value, i;
+      damageDealt, value, i,
+      rStats, rIndex;
 
   if( closestEnemyInRange ) {
     mob.speed = 0;
@@ -162,17 +176,23 @@ function mobTick( mob, index, mobs, game, player ) {
 
       // reward soul value
       value = mobStats[ mob.type ].value * modifiers.profit;
-      player.update.resources[ 2 ] = player.resources[ 2 ] += value;
+      update.resources[ 2 ] = player.resources[ 2 ] += value;
     }
   }
   else if( closestResourceInRange ) {
     mob.speed = 0;
     damageDealt = stats.strength * modifiers.strength;
-    closestResource.damage += damageDealt;
+    closestResource.health -= damageDealt;
 
-    if( closestResource.damage >= resourceStats[ resource.type ].health ) {
-      resource.dead = true;
-      info.fieldResources[ resource.id ] = { died: true };
+    if( closestResource.health <= 0 ) {
+      update.fieldResources[ closestResource.id ] = { died: true };
+
+      rStats = resourceStats[ closestResource.type ];
+      rIndex = rStats.index;
+
+      update.resources[ rIndex ] = player.resources[ rIndex ] += closestResource.value * modifiers.profit;
+
+      fieldResources.shift();
     }
   }
   else {
@@ -194,11 +214,12 @@ function mobTick( mob, index, mobs, game, player ) {
   }
 
   // only store update info if something happened worth noting
-  if( Object.keys( mobInfo ).length ) player.update.mobs[ mob.id ] = mobInfo;
+  if( Object.keys( mobInfo ).length ) update.mobs[ mob.id ] = mobInfo;
 }
 
 function finishTurn( playerId, players, info ) {
-  var mobs = players[ playerId ].mobs;
+  var player = players[ playerId ],
+      mobs = player.mobs;
   
   while( mobs.length && mobs[ mobs.length - 1 ].dead ) mobs.pop();
 
