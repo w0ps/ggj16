@@ -1,0 +1,19 @@
+extends mobile
+
+append header
+    script( src='/js/lib/dollar.js' )
+    script( src='/js/controller.js' )
+    script
+        != "var gameId = '" + gameId + "';"
+
+    link( rel='stylesheet' type='text/css' href='/css/mobile.css' )
+
+block content
+    canvas#gesture
+        span The &lt;canvas&gt; element is not supported by this browser.
+    #stats 
+        span#resource1 1
+        span#resource2 2
+        span#resource3 3
+        span#resource4 4
+    

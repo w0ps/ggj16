@@ -1,14 +1,14 @@
 var express = require( 'express' ),
-		path = require( 'path' ),
-		favicon = require( 'static-favicon' ),
-		logger = require( 'morgan' ),
-		//cookieParser = require( 'cookie-parser' ),
-		//bodyParser = require( 'body-parser' ),
-		socketIO = require( 'socket.io' ),
-		shortId = require( 'shortid' );
+    path = require( 'path' ),
+    favicon = require( 'static-favicon' ),
+    logger = require( 'morgan' ),
+    //cookieParser = require( 'cookie-parser' ),
+    //bodyParser = require( 'body-parser' ),
+    socketIO = require( 'socket.io' ),
+    shortId = require( 'shortid' );
 
-var lobby = require( './lobby' ),
-		controller = require( './controller' );
+var game = require( './game' ),
+    controller = require( './controller' );
 
 //var routes = require('./routes/index');
 //var users = require('./routes/users');
@@ -26,7 +26,7 @@ var webPort = 3002;
 //app.locals.apiUrl = apiUrl;
 
 app.locals.info = {
-	title: 'ggj16'
+    title: 'ggj16'
 };
 
 // view engine setup
@@ -44,7 +44,7 @@ app.use( express.static( path.join( __dirname, 'public' ) ) );
 
 app.get( '/', showLobby );
 
-app.use( '/lobby', lobby.app );
+app.use( '/game', game.app );
 app.use( '/controller', controller.app );
 
 /// catch 404 and forward to error handler
@@ -79,14 +79,20 @@ app.use( function( err, req, res, next ) {
 } );
 
 var server = app.listen( webPort ),
-		io = socketIO( server );
+        io = socketIO( server );
 
-io.on( 'connection', function( socket ) {
-  console.log( 'a user connected' );
-} );
+game.setSocketIO( io );
+
+// io.on( 'connection', function( socket ) {
+  
+// } );
+
+//io.on( 'asd', console.log.bind(console, 'asd'));
+
+//controller.setIO( io );
 
 function showLobby( req, res, next ) {
-	var id = shortId();
-	
-	res.redirect( '/lobby/' + id );
+    var id = shortId();
+    
+    res.redirect( '/game/' + id );
 }

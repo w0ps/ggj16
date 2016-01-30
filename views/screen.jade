@@ -1,9 +1,9 @@
 extends main
 
 append header
-	script( src='/js/lobby.js' )
+	script( src='/js/screen.js' )
 	script
-		!= "var lobbyId = '" + lobbyId + "';"
+		!= "var gameId = '" + gameId + "';"
 
 block content
 	p welcome to the lobby
