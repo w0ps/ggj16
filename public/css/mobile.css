@@ -2,11 +2,11 @@ body {
     padding: 0;
     margin: 0;
     overflow: hidden;
+    background: url('/img/parchment.jpg');
+    background-size: cover;
 }
 
 canvas {
-    background: url('/img/parchment.jpg');
-    background-size: cover;
     float: left;
 }
 
@@ -38,7 +38,7 @@ canvas {
     display: flex;
     height: 40%;
 }
-.resources span {
+.resources > span {
     width: 25%;
     position: relative;
 }

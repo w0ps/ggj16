@@ -217,7 +217,7 @@ function getScrollY() {
       return scrollY;
     }
 
-    function touchStartEvent(x, y) {
+  function touchStartEvent(x, y) {
     document.onselectstart = function() { return false; } // disable drag-select
     document.onmousedown = function() { return false; } // disable drag-select
     _isDown = true;
@@ -243,12 +243,12 @@ function getScrollY() {
       y -= _rc.y - getScrollY();
         _points[_points.length] = new Point(x, y); // append
         drawConnectedPoint(_points.length - 2, _points.length - 1);
-      }
     }
+  }
 
-    function touchEndEvent() {
-      x = lastX;
-      y = lastY;
+  function touchEndEvent() {
+    x = lastX;
+    y = lastY;
     document.onselectstart = function() { return true; } // enable drag-select
     document.onmousedown = function() { return true; } // enable drag-select
     if (_isDown) {
@@ -260,21 +260,21 @@ function getScrollY() {
               summon(result.Name);
             }
             console.log("Result: " + result.Name + " (" + round(result.Score,2) + ").");
-          } 
-        }
-      }
+      } 
+    }
+  }
 
-      function drawConnectedPoint(from, to) {
-        _g.beginPath();
-        _g.moveTo(_points[from].X, _points[from].Y);
-        _g.lineTo(_points[to].X, _points[to].Y);
-        _g.closePath();
-        _g.stroke();
-      }
+  function drawConnectedPoint(from, to) {
+    _g.beginPath();
+    _g.moveTo(_points[from].X, _points[from].Y);
+    _g.lineTo(_points[to].X, _points[to].Y);
+    _g.closePath();
+    _g.stroke();
+  }
 
-      function round(n, d) {
-        d = Math.pow(10, d);
-        return Math.round(n * d) / d
-      }
+  function round(n, d) {
+    d = Math.pow(10, d);
+    return Math.round(n * d) / d
+  }
 
 
