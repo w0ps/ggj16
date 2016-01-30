@@ -9,9 +9,27 @@ var mobStats = [
 				strength: 0.5,
 				health: 1,
 				range: 1,
-				value: 1
+				value: 1,
+				cost: [ 1, 0, 0, 0 ]
 			}
-		];
+		],
+		gesturesDark = [
+			'inverted pentagram'
+		],
+		gesturesLight = [
+			'pentagram'
+		],
+		spellNamesByGesture = {
+			square: 'strength'
+		},
+		spells = {
+			strength: {
+				cost: [ 1, 0, 0, 0 ],
+				cast: function( player ) {
+					player.strengthModifier = 2;
+				}
+			}
+		};
 
 var Player = require( './player' );
 
@@ -39,6 +57,8 @@ function Game( id ){
 		socket.on( 'screen joined', game.addScreen.bind( game, socekt ) );
 
 		socket.on( 'controller joined', game.join.bind( game, socket ) );
+
+		socket.on( 'gesture', game.summon.bind( game, socket ) );
 	} );
 }
 
@@ -48,6 +68,7 @@ function assignGamePrototypeMethods() {
 	this.join = joinGame;
 	this.addScreen = addScreen;
 	this.tick = tick;
+	this.summon = summon;
 }
 
 function tick() {
@@ -119,6 +140,37 @@ function mobTick( mob, game, player, enemies, fieldResources, opponent ) {
 	else {
 		mob.moving = true;
 		mob.position = stats.speed * player.speedModifier * player.direction;
+	}
+}
+
+function summon( socket, gesture ) {
+	var player = this.players[ socket.id ],
+			resources = player.resources,
+			mobType = player.direction > 0 ? gesturesDark.indexOf( gesture ) : gesturesLight.indexOf( gesture ),
+			isMob = mobType > -1,
+			spellName = isMob && spellNamesByGesture[ gesture ],
+			cost = isMob ? mobStats[ mobType ].cost : spells[ spellName ].cost,
+			cantAfford = false;
+
+	cost.forEach( evaluateResouces );
+
+	if( cantAfford ) return socket.emit( 'cannot afford' );
+
+	cost.forEach( spendResource );
+
+	if( isMob ) player.mobs.unshift( new Mob( mobType, player.direction > 0 ? 0 : 1000 ) );
+	else spells[ spellName ].cast( player );
+
+	return;
+
+	function evaluateResources( value, index ) {
+		if( value ) {
+			cantAfford = cantAfford || value > resources[ index ];
+		}
+	}
+
+	function spendResource( value, index ) {
+		resources[ index ] -= value;
 	}
 }
 
