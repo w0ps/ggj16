@@ -129,7 +129,7 @@ function tick() {
 
   this.playerKeys.forEach( playerId => this.players[ playerId ].update = {
     mobs: {},
-    resources: [],
+    resources: this.players[ playerId ].update && this.players[ playerId ].update.resources || [],
     fieldResources: {},
     spells: {}
   } );
@@ -234,6 +234,7 @@ function finishTurn( playerId, players, info ) {
   Object.keys( player.update ).forEach( deleteIfEmpty );
 
   if( Object.keys( player.update ).length ) info[ playerId ] = player.update;
+  delete player.update;
 
   // console.log( player.update );
   return;
@@ -264,6 +265,10 @@ function summon( socket, gesture ) {
 
   if( cantAfford ) return socket.emit( 'cannot afford' );
 
+  player.update = player.update || {
+    resources: []
+  };
+
   cost.forEach( spendResource );
 
   if( isMob ) player.mobs.unshift( new Mob( mobType, mobStats[ mobType ], player.direction > 0 ? 0 : maxDistance ) );
@@ -279,6 +284,7 @@ function summon( socket, gesture ) {
 
   function spendResource( value, index ) {
     resources[ index ] -= value;
+    player.update.resources[ index ] = resources[ index ];
   }
 }
 
