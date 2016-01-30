@@ -1,14 +1,14 @@
 var express = require( 'express' ),
-		path = require( 'path' ),
-		favicon = require( 'static-favicon' ),
-		logger = require( 'morgan' ),
-		//cookieParser = require( 'cookie-parser' ),
-		//bodyParser = require( 'body-parser' ),
-		socketIO = require( 'socket.io' ),
-		shortId = require( 'shortid' );
+    path = require( 'path' ),
+    favicon = require( 'static-favicon' ),
+    logger = require( 'morgan' ),
+    //cookieParser = require( 'cookie-parser' ),
+    //bodyParser = require( 'body-parser' ),
+    socketIO = require( 'socket.io' ),
+    shortId = require( 'shortid' );
 
 var game = require( './game' ),
-		controller = require( './controller' );
+    controller = require( './controller' );
 
 //var routes = require('./routes/index');
 //var users = require('./routes/users');
@@ -26,7 +26,7 @@ var webPort = 3002;
 //app.locals.apiUrl = apiUrl;
 
 app.locals.info = {
-	title: 'ggj16'
+    title: 'ggj16'
 };
 
 // view engine setup
@@ -79,7 +79,7 @@ app.use( function( err, req, res, next ) {
 } );
 
 var server = app.listen( webPort ),
-		io = socketIO( server );
+        io = socketIO( server );
 
 game.setSocketIO( io );
 
@@ -92,7 +92,7 @@ game.setSocketIO( io );
 //controller.setIO( io );
 
 function showLobby( req, res, next ) {
-	var id = shortId();
-	
-	res.redirect( '/game/' + id );
+    var id = shortId();
+    
+    res.redirect( '/game/' + id );
 }
