@@ -86,15 +86,14 @@ function createPatternRecognizer( gestures ) {
 }
 
 function updateViewResources(resources) {
-  var i = 0,
-      _resourceContainer;
+  var _resourceContainer;
 
   resources.forEach ( updateResource );
 
-  function updateResource( resource ) {
+  function updateResource( resource, i ) {
+    if ( resource === null ) return;
     _resourceContainer = document.getElementById('resource_' + i);
     _resourceContainer.innerHTML = resource;
-    i++;
   } 
 }
 
@@ -257,7 +256,7 @@ function getScrollY() {
       if (_points.length >= 10) {
         var result = _r.Recognize(_points, false);
             console.log(result);
-            if (result.Score*100 >= 80) { // accurate
+            if (result.Score*100 >= 50) { // accurate
               console.log("Summon: " + result.Name)
               summon(result.Name);
             }
