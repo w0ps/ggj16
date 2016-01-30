@@ -25,7 +25,7 @@ function Game( id ){
 	this.screens = {};
 	this.room = io.of( '/' + id );
 	this.room.on( 'connection', function( socket ){
-		socket.on( 'screen joined', game.addScreen.bind( game, socekt ) );
+		socket.on( 'screen joined', game.addScreen.bind( game, socket ) );
 
 		socket.on( 'controller joined', game.join.bind( game, socket ) );
 	} );
