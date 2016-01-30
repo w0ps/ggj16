@@ -21,28 +21,19 @@ block content
       .preview
         img(src='/img/penta.png')
       .resources
-        span#resource_0
-        span#resource_1
-        span#resource_2
-        span#resource_3
+        span
+          span#resource_0
+          img(src='/img/pt1.png')
+        span
+          span#resource_1
+          img(src='/img/pt2.png')
+        span
+          span#resource_2
+          img(src='/img/pt3.png')
+        span
+          span#resource_3
+          img(src='/img/pt4.png')
     #health
-      span.wrapper
-        img(src='/img/full_health.bmp')
-      span.wrapper
-        img(src='/img/full_health.bmp')
-      span.wrapper
-        img(src='/img/full_health.bmp')
-      span.wrapper
-        img(src='/img/full_health.bmp')
-      span.wrapper
-        img(src='/img/full_health.bmp')
-      span.wrapper
-        img(src='/img/full_health.bmp')
-      span.wrapper
-        img(src='/img/full_health.bmp')
-      span.wrapper
-        img(src='/img/full_health.bmp')
-      span.wrapper
-        img(src='/img/full_health.bmp')
-      span.wrapper
-        img(src='/img/full_health.bmp')
+      each val in [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+        span.wrapper
+          img(src='/img/full_health.bmp')
