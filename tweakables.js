@@ -1,12 +1,51 @@
 module.exports = {
   mobStats: [
-      { // first mob type
+      { // hound or fairy
         speed: 1.5,
         strength: 0.5,
+        health: 1.25,
+        range: 1.5,
+        value: 1,
+        cost: [ 1, 0, 0, 0 ]
+      },
+      { // satyr or faun
+        speed: 1,
+        strength: 1,
         health: 1,
         range: 1,
         value: 1,
         cost: [ 1, 0, 0, 0 ]
+      },
+      { // vampire or elf
+        speed: 1.2,
+        strength: 1.5,
+        health: 2,
+        range: 1.2,
+        value: 2,
+        cost: [ 0, 1, 0, 0 ]
+      },
+      { // succubus or unicorn
+        speed: 0.9,
+        strength: 0.75,
+        health: 3,
+        range: 3,
+        value: 5,
+        cost: [ 0, 1, 1, 0 ]
+      },
+      { // orc of tree person
+        speed: 0.7,
+        strength: 2.5,
+        health: 3,
+        range: 1,
+        value: 8,
+        cost: [ 0, 1, 1, 0 ]
+      },
+      { // baal or gaia
+        speed: 0.4,
+        strength: 10,
+        health: 50,
+        range: 2,
+        cost: [ 0, 0, 0, 5 ]
       }
     ],
     gesturesDark: [
@@ -22,7 +61,7 @@ module.exports = {
         index: 1
       },
       {
-        health: 10,
+        health: 20,
         value: 30,
         index: 3
       }
