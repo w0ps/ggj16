@@ -40,6 +40,13 @@ canvas {
 }
 .resources span {
     width: 25%;
+    position: relative;
+}
+.resources img {
+    width: 100%;
+    height: auto;
+    position: absolute;
+    bottom: 2px;
 }
 
 #health {
