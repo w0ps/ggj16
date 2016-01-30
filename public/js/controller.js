@@ -1,26 +1,20 @@
-var socket;
-document.addEventListener( 'DOMContentLoaded', init );
-
-function init(){
+function initCallback(){
 	socket = io( '/' + gameId );
 
 	var playerName = localStorage.playerName || prompt( 'what is your name?' );
 	localStorage.playerName = playerName;
 
 	socket.emit( 'controller joined', playerName );
-
-	socket.on( 'players', playerJoined );
-
-	socket.on( 'ready?', areYouReady );
-
-	socket.on( 'play', showPlay );
-
-	socket.on( 'requestPause', confirmPause );
-	
-	socket.on( 'paused', pause );
-
-	socket.on( 'update', update );
 }
+
+socketHandlers = {
+	'players': playerJoined,
+	'ready?': areYouReady,
+	'play': showPlay,
+	'requestPause': confirmPause,
+	'paused': pause,
+	'update': update
+};
 
 var players = {};
 
