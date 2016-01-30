@@ -1,11 +1,5 @@
 var _isDown, _points, _r, _g, _rc, _lastX, _lastY,
     canvas, stats, socket,
-    gesturesDark = [
-      'inverted pentagram'
-    ],
-    gesturesLight = [
-      'pentagram'
-    ],
     gesturesDarkPatterns = [
       {name: 'inverted pentagram', points: new Array(new Point(150,85),new Point(151,93),new Point(151,94),new Point(152,96),new Point(152,97),new Point(154,100),new Point(154.25112815762853,100.50225631525703),new Point(155,102),new Point(155,104),new Point(156,105),new Point(156,106),new Point(157,107),new Point(157,109),new Point(158,110),new Point(158,111),new Point(159,112),new Point(159,114),new Point(159.8018831578807,114.8018831578807),new Point(160,115),new Point(160,116),new Point(160,117),new Point(161,118),new Point(162,120),new Point(162,121),new Point(162,122),new Point(163,123),new Point(163,124),new Point(163,125),new Point(164,126),new Point(164,127),new Point(165,128),new Point(165,129),new Point(165,129.29231488073216),new Point(165,130),new Point(166,131),new Point(166,132),new Point(167,133),new Point(167,134),new Point(167,135),new Point(168,136),new Point(168,137),new Point(168,138),new Point(169,139),new Point(169,140),new Point(169,141),new Point(170,142),new Point(170,143),new Point(170,143.68666370165067),new Point(170,144),new Point(171,145),new Point(171,146),new Point(171,147),new Point(172,148),new Point(172,149),new Point(172,150),new Point(173,152),new Point(173,153),new Point(174,154),new Point(174,155),new Point(174,156),new Point(175,157),new Point(175,158),new Point(175.18325245517204,158.18325245517204),new Point(176,159),new Point(176,160),new Point(176,161),new Point(176,162),new Point(177,163),new Point(177,164),new Point(177,165),new Point(177,166),new Point(178,167),new Point(178,168),new Point(178,169),new Point(179,170),new Point(179,171),new Point(179,172),new Point(179,173),new Point(179.04788561822332,173.04788561822332),new Point(180,174),new Point(180,175),new Point(180,176),new Point(180,177),new Point(181,178),new Point(181,180),new Point(182,181),new Point(182,183),new Point(183,183),new Point(183,184),new Point(183,185),new Point(184,186),new Point(184,186.87628287402563),new Point(184,187),new Point(184,188),new Point(185,189),new Point(185,191),new Point(186,192),new Point(186,193),new Point(186,194),new Point(187,195),new Point(187,196),new Point(188,197),new Point(188,198),new Point(189,200),new Point(189,201),new Point(189,201.44877727981745),new Point(189,202),new Point(190,203),new Point(190,204),new Point(191,205),new Point(191,207),new Point(192,208),new Point(192,209),new Point(193,211),new Point(194,213),new Point(194,214),new Point(194.98360930553721,215.96721861107443),new Point(195,216),new Point(195,218),new Point(196,220),new Point(196,221),new Point(197,223),new Point(197,224),new Point(197,225),new Point(198,226),new Point(198,227),new Point(199,228),new Point(199,230),new Point(199,231),new Point(199.09065310178886,231.09065310178886),new Point(200,232),new Point(200,233),new Point(200,235),new Point(201,236),new Point(201,237),new Point(201,239),new Point(201,240),new Point(202,241),new Point(202,242),new Point(202,243),new Point(202,244),new Point(202,245),new Point(202.95528626484014,245.95528626484014),new Point(203,246),new Point(203,247),new Point(203,248),new Point(203,249),new Point(203,251),new Point(203,252),new Point(204,253),new Point(204,255),new Point(204,256),new Point(204,257),new Point(204,258),new Point(204,259),new Point(205,261),new Point(205,261.75190032222366),new Point(205,262),new Point(205,263),new Point(205,264),new Point(205,265),new Point(205,266),new Point(206,266),new Point(206,267),new Point(206,268),new Point(206,269),new Point(207,269),new Point(207,268),new Point(207,267),new Point(207,266),new Point(208,265),new Point(208,264),new Point(208,263),new Point(208.3591587557783,262.2816824884434),new Point(209,261),new Point(209,259),new Point(210,257),new Point(210,255),new Point(211,253),new Point(211,251),new Point(212,249),new Point(212,247),new Point(212.14500816553078,246.70998366893843),new Point(213,245),new Point(213,243),new Point(214,241),new Point(214,239),new Point(215,237),new Point(216,235),new Point(216,233),new Point(217,232),new Point(217,231.56882072416892),new Point(217,230),new Point(218,229),new Point(218,227),new Point(219,226),new Point(219,225),new Point(220,223),new Point(221,222),new Point(221,220),new Point(222,218),new Point(222,216.8181807335038),new Point(222,216),new Point(223,214),new Point(224,212),new Point(224,210),new Point(225,208),new Point(225,206),new Point(226,205),new Point(227,203),new Point(227,201.71124957309206),new Point(227,201),new Point(228,199),new Point(228,198),new Point(229,196),new Point(230,195),new Point(230,194),new Point(231,192),new Point(231,191),new Point(232,190),new Point(233,189),new Point(233,188),new Point(233.5680347448551,187.4319652551449),new Point(234,187),new Point(235,186),new Point(235,185),new Point(236,184),new Point(236,183),new Point(237,182),new Point(237,181),new Point(238,180),new Point(238,179),new Point(239,178),new Point(239,177),new Point(240,176),new Point(240,175),new Point(240.61234459328762,173.7753108134248),new Point(241,173),new Point(242,172),new Point(242,170),new Point(243,169),new Point(244,168),new Point(244,166),new Point(245,164),new Point(245,163),new Point(246,161),new Point(247,160),new Point(247,159.53039741296223),new Point(247,158),new Point(247,156),new Point(248,155),new Point(248,153),new Point(249,151),new Point(249,150),new Point(250,148),new Point(250,146),new Point(251,145),new Point(251,144.36554385992403),new Point(251,143),new Point(251,142),new Point(252,141),new Point(252,139),new Point(253,137),new Point(253,136),new Point(254,134),new Point(255,133),new Point(255,131),new Point(256,130),new Point(256.17222022524186,129.6555595495163),new Point(257,128),new Point(257,127),new Point(258,125),new Point(259,124),new Point(259,122),new Point(260,120),new Point(261,119),new Point(261,117),new Point(262,115),new Point(262,114.92218627122028),new Point(262,113),new Point(263,112),new Point(263,110),new Point(263,108),new Point(264,106),new Point(264,103),new Point(265,101),new Point(265,99.34311915580898),new Point(265,98),new Point(266,96),new Point(267,94),new Point(267,92),new Point(268,90),new Point(268,88),new Point(268,87),new Point(268,86),new Point(269,85),new Point(269,84.00012001789747),new Point(269,84),new Point(269,83),new Point(269,82),new Point(269,81),new Point(270,81),new Point(270,80),new Point(270,79),new Point(269,80),new Point(269,81),new Point(268,81),new Point(267,82),new Point(266,84),new Point(264,85),new Point(263.1764090190266,85.82359098097339),new Point(263,86),new Point(262,88),new Point(260,89),new Point(259,91),new Point(258,92),new Point(257,94),new Point(255,95),new Point(254,96),new Point(254,97),new Point(253.1464021945308,97.8535978054692),new Point(253,98),new Point(252,99),new Point(251,100),new Point(250,101),new Point(248,102),new Point(247,103),new Point(246,104),new Point(245,105),new Point(243,107),new Point(242,108),new Point(241,108),new Point(240.7918400496982,108.20815995030179),new Point(240,109),new Point(239,110),new Point(238,111),new Point(237,111),new Point(236,112),new Point(235,113),new Point(234,114),new Point(233,115),new Point(231,116),new Point(230,117),new Point(228.02329553180203,117.98835223409898),new Point(228,118),new Point(227,120),new Point(226,121),new Point(224,122),new Point(223,123),new Point(222,124),new Point(220,125),new Point(219,126),new Point(218,127),new Point(216,128),new Point(215.70016429918329,128.29983570081671),new Point(215,129),new Point(213,130),new Point(212,131),new Point(210,133),new Point(208,134),new Point(207,135),new Point(205,136),new Point(204,137),new Point(202.4830845415344,137.7584577292328),new Point(202,138),new Point(200,139),new Point(198,140),new Point(196,141),new Point(194,142),new Point(192,142),new Point(190,143),new Point(188,144),new Point(187.54482257602996,144.22758871198502),new Point(186,145),new Point(184,146),new Point(182,147),new Point(180,148),new Point(179,149),new Point(178,150),new Point(176,151),new Point(175,152),new Point(173.61243942072775,152.69378028963612),new Point(173,153),new Point(172,154),new Point(170,155),new Point(168,156),new Point(167,157),new Point(165,158),new Point(163,159),new Point(162,160),new Point(160,161),new Point(159.7470622689111,161.2529377310889),new Point(159,162),new Point(157,163),new Point(156,164),new Point(154,165),new Point(153,166),new Point(151,167),new Point(150,169),new Point(149,170),new Point(147.0125841741907,170.99370791290465),new Point(147,171),new Point(146,172),new Point(144,173),new Point(143,173),new Point(142,174),new Point(141,175),new Point(140,176),new Point(138,177),new Point(137,177),new Point(136,178),new Point(135,179),new Point(134,180),new Point(133.9202837932928,180),new Point(133,180),new Point(132,181),new Point(131,182),new Point(130,183),new Point(129,183),new Point(128,184),new Point(127,185),new Point(126,186),new Point(125,186),new Point(124,187),new Point(124,188),new Point(123,189),new Point(122.12925149830976,189.87074850169026),new Point(122,190),new Point(122,191),new Point(121,191),new Point(121,192),new Point(121,193),new Point(120,194),new Point(120,195),new Point(119,195),new Point(119,196),new Point(118,196),new Point(117,197),new Point(116,197),new Point(117,197),new Point(118,197),new Point(120,197),new Point(120.4542002861711,197),new Point(122,197),new Point(123,197),new Point(125,197),new Point(127,197),new Point(129,197),new Point(131,196),new Point(132,196),new Point(134,196),new Point(136,196),new Point(136.68354894145529,196),new Point(137,196),new Point(139,196),new Point(141,196),new Point(143,196),new Point(144,197),new Point(146,197),new Point(147,197),new Point(149,197),new Point(150,197),new Point(152,198),new Point(152.49868403436636,198),new Point(153,198),new Point(154,198),new Point(155,198),new Point(156,198),new Point(157,198),new Point(159,199),new Point(160,199),new Point(161,199),new Point(162,199),new Point(164,199),new Point(165,199),new Point(166,200),new Point(168,200),new Point(168.31381912727744,200),new Point(169,200),new Point(170,200),new Point(172,200),new Point(173,201),new Point(175,201),new Point(176,201),new Point(178,202),new Point(180,202),new Point(181,202),new Point(183,203),new Point(183.89288624268875,203),new Point(184,203),new Point(186,203),new Point(188,204),new Point(189,204),new Point(191,204),new Point(192,204),new Point(194,205),new Point(195,205),new Point(197,205),new Point(199,205),new Point(199.88616692047313,205),new Point(200,205),new Point(202,205),new Point(204,205),new Point(205,205),new Point(207,205),new Point(208,206),new Point(210,206),new Point(212,206),new Point(213,206),new Point(215,206),new Point(215.937369990884,206),new Point(217,206),new Point(219,206),new Point(220,206),new Point(222,206),new Point(224,206),new Point(225,206),new Point(227,206),new Point(228,206),new Point(230,206),new Point(231,206),new Point(232.25469049937962,206.6273452496898),new Point(233,207),new Point(234,207),new Point(235,207),new Point(237,207),new Point(238,207),new Point(239,207),new Point(241,207),new Point(242,208),new Point(243,208),new Point(245,208),new Point(246,208),new Point(248,208),new Point(248.15409392356088,208.15409392356088),new Point(249,209),new Point(250,209),new Point(252,209),new Point(253,209),new Point(254,209),new Point(255,209),new Point(257,209),new Point(258,209),new Point(259,209),new Point(261,210),new Point(262,210),new Point(263,210),new Point(264.0330568094902,210),new Point(265,210),new Point(266,210),new Point(268,210),new Point(269,210),new Point(271,210),new Point(272,210),new Point(274,210),new Point(275,210),new Point(277,210),new Point(278,210),new Point(280,210),new Point(280.49847344227413,210),new Point(281,210),new Point(283,210),new Point(284,210),new Point(286,210),new Point(287,210),new Point(288,210),new Point(290,210),new Point(291,210),new Point(292,210),new Point(293,210),new Point(294,210),new Point(295,210),new Point(296,210),new Point(296,209.03610992494188),new Point(296,209),new Point(297,209),new Point(298,209),new Point(299,209),new Point(300,209),new Point(301,209),new Point(302,209),new Point(303,209),new Point(304,209),new Point(305,209),new Point(306,209),new Point(307,209),new Point(308,209),new Point(307,208),new Point(305,207),new Point(304.2209748320308,207),new Point(304,207),new Point(303,206),new Point(301,204),new Point(299,203),new Point(298,202),new Point(296,200),new Point(295,199),new Point(293,198),new Point(292,197),new Point(291.67572270626556,196.6757227062656),new Point(290,195),new Point(289,194),new Point(287,193),new Point(286,191),new Point(285,190),new Point(283,188),new Point(282,187),new Point(281,185),new Point(280.7170791642967,184.85853958214835),new Point(279,184),new Point(278,182),new Point(277,180),new Point(276,179),new Point(274,178),new Point(273,176),new Point(272,175),new Point(270.0392178347325,173.03921783473245),new Point(270,173),new Point(269,172),new Point(267,170),new Point(265,168),new Point(263,167),new Point(261,165),new Point(259,163),new Point(257.7066903021638,162.3533451510819),new Point(257,162),new Point(255,160),new Point(253,158),new Point(251,157),new Point(249,156),new Point(247,154),new Point(245,153),new Point(244.54289825200107,152.84763275066703),new Point(242,152),new Point(240,151),new Point(238,150),new Point(236,149),new Point(234,148),new Point(232,147),new Point(231,146),new Point(229.93526218037292,145.46763109018647),new Point(229,145),new Point(227,144),new Point(226,143),new Point(224,142),new Point(223,141),new Point(222,139),new Point(220,139),new Point(219,137),new Point(218,136),new Point(217.76715087038374,136),new Point(217,136),new Point(216,134),new Point(215,133),new Point(213,132),new Point(212,131),new Point(211,130),new Point(209,129),new Point(208,128),new Point(206,127),new Point(205.22420514687494,126.22420514687495),new Point(205,126),new Point(203,125),new Point(202,124),new Point(201,123),new Point(199,122),new Point(198,121),new Point(196,120),new Point(195,120),new Point(193,119),new Point(191.24564360660068,118.12282180330034),new Point(191,118),new Point(190,117),new Point(189,116),new Point(187,116),new Point(185,115),new Point(184,114),new Point(182,113),new Point(180,112),new Point(179,112),new Point(177,111),new Point(176.99726623017222,110.99726623017222),new Point(176,110),new Point(175,109),new Point(173,109),new Point(172,108),new Point(171,108),new Point(170,107),new Point(169,106),new Point(168,105),new Point(167,105),new Point(165,104),new Point(164,103),new Point(163.70151188926508,102.85075594463254),new Point(162,102),new Point(161,101),new Point(160,100),new Point(158,99),new Point(157,98),new Point(156,97),new Point(155,96),new Point(154,95),new Point(153,94),new Point(152,93),new Point(151.28349433296432,92.28349433296434),new Point(151,92),new Point(150,91),new Point(149,90),new Point(149,89),new Point(148,89),new Point(148,88),new Point(147,88),new Point(147,87),new Point(146,87),new Point(146,89),new Point(146,90),new Point(146,92),new Point(145,94))}
     ],
@@ -15,46 +9,6 @@ var _isDown, _points, _r, _g, _rc, _lastX, _lastY,
     ];
 
 window.addEventListener( 'resize', sizeCanvas );
-
-function initCallback() {
-    // Connect to the socket
-    socket = io( '/' + gameId );
-
-    var playerName = localStorage.playerName || prompt( 'what is your name?' );
-    localStorage.playerName = playerName;
-
-    var playerNameContainer = document.getElementById('name');
-    playerNameContainer.innerHTML = localStorage.playerName;
-
-    console.log( 'joining' );
-    // player joins game
-    socket.emit( 'controller joined', playerName );
-
-    // Setup the canvas
-    _points = new Array();
-    _r = new DollarRecognizer(gesturesDarkPatterns);
-
-    stats = document.getElementById('stats');
-    canvas = document.getElementById('gesture');
-    _g = canvas.getContext('2d');
-    sizeCanvas();
-
-    // Add events
-    canvas.addEventListener('touchstart', function( e ) {
-      touchStartEvent(e.touches[0].clientX, e.touches[0].clientY)
-    } );
-    canvas.addEventListener('touchmove', function( e ) {
-      touchMoveEvent(event.touches[0].clientX, event.touches[0].clientY);
-    } );
-    canvas.addEventListener('touchend', function( e ) {
-      touchEndEvent();
-    } );
-    canvas.addEventListener('oncontextmenu', function ( e ) {
-      return false;
-    } );
-
-    _isDown = false;
-  }
 
 // Socket handlers
 socketHandlers = {
@@ -68,7 +22,45 @@ socketHandlers = {
 
 var players = {};
 
+function initCallback() {
+  // Connect to the socket
+  socket = io( '/' + gameId );
+
+  var playerName = localStorage.playerName || prompt( 'what is your name?' );
+  localStorage.playerName = playerName;
+
+  var playerNameContainer = document.getElementById('name');
+  playerNameContainer.innerHTML = localStorage.playerName;
+
+  console.log( 'joining' );
+  // player joins game
+  socket.emit( 'controller joined', playerName );
+
+  // Setup the canvas
+  stats = document.getElementById('stats');
+  canvas = document.getElementById('gesture');
+  _g = canvas.getContext('2d');
+  sizeCanvas();
+
+  // Add events
+  canvas.addEventListener('touchstart', function( e ) {
+    touchStartEvent(e.touches[0].clientX, e.touches[0].clientY)
+  } );
+  canvas.addEventListener('touchmove', function( e ) {
+    touchMoveEvent(event.touches[0].clientX, event.touches[0].clientY);
+  } );
+  canvas.addEventListener('touchend', function( e ) {
+    touchEndEvent();
+  } );
+  canvas.addEventListener('oncontextmenu', function ( e ) {
+    return false;
+  } );
+
+  _isDown = false;
+}
+
 function playerJoined( playerData ) {
+  var playerCount = Object.keys( playerData ).length;
   playerData.forEach( setPlayer );
 
   function setPlayer( playerData ) {
@@ -79,21 +71,29 @@ function playerJoined( playerData ) {
     };
 
     if (playerData.id == socket.nsp + '#' + socket.id) {
-      updateViewResources(playerData.resources );
+      updateViewResources( playerData.resources );
+      if (_r === undefined) {
+        var gestures = playerCount === 1 ? gesturesLightPatterns : gesturesDarkPatterns;
+        createPatternRecognizer( gestures );
+      }
     }
   }
 }
 
+function createPatternRecognizer( gestures ) {
+  _points = new Array();
+  _r = new DollarRecognizer( gestures );
+}
+
 function updateViewResources(resources) {
-  var i = 0,
-      _resourceContainer;
+  var _resourceContainer;
 
   resources.forEach ( updateResource );
 
-  function updateResource( resource ) {
+  function updateResource( resource, i ) {
+    if ( resource === null ) return;
     _resourceContainer = document.getElementById('resource_' + i);
     _resourceContainer.innerHTML = resource;
-    i++;
   } 
 }
 
@@ -255,7 +255,8 @@ function getScrollY() {
       _isDown = false;
       if (_points.length >= 10) {
         var result = _r.Recognize(_points, false);
-            if (result.Score*100 >= 80) { // accurate
+            console.log(result);
+            if (result.Score*100 >= 50) { // accurate
               console.log("Summon: " + result.Name)
               summon(result.Name);
             }
