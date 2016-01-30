@@ -30,7 +30,8 @@ var mobStats = [
         }
       }
     },
-    maxDistance = 1000;
+    maxDistance = 1000,
+    tickDelay = 1000 / 2;
 
 var Player = require( './player' );
 
@@ -55,24 +56,37 @@ function Game( id ){
   this.screens = {};
   this.room = io.of( '/' + id );
   this.room.on( 'connection', function( socket ){
-    socket.on( 'screen joined', game.addScreen.bind( game, socekt ) );
+    socket.on( 'screen joined', game.addScreen.bind( game, socket ) );
 
     socket.on( 'controller joined', game.join.bind( game, socket ) );
 
     socket.on( 'gesture', game.summon.bind( game, socket ) );
+
+    socket.on( 'ready', game.playerReady.bind( game, socket ) );
   } );
 }
 
 assignGamePrototypeMethods.call( Game.prototype );
 
 function assignGamePrototypeMethods() {
-  this.join = joinGame;
-  this.addScreen = addScreen;
+  this.play = play;
   this.tick = tick;
   this.summon = summon;
+  this.addScreen = addScreen;
+  this.join = joinGame;
+  this.playerReady = playerReady;
+}
+
+function play() {
+  this.room.emit( 'play' );
+  this.running = true;
+  this.tick();
 }
 
 function tick() {
+  if( !this.running ) return;
+  setTimeout( this.tick.bind( this ), tickDelay );
+
   this.playerKeys.forEach( playerId => this.players[ playerId ].update = {
     mobs: {},
     resources: {},
@@ -200,14 +214,21 @@ function joinGame( socket, name ) {
   if( this.playerKeys.length === 2 ) {
     player.opponent = opponent = this.players[ this.playerKeys[ 0 ] ];
     opponent.opponent = player;
+    this.room.emit( 'ready?' );
   }
 
   this.room.emit( 'player joined', player.name );
 }
 
+function playerReady( socket ) {
+  var player = this.players[ socket.id ];
+  player.ready = true;
+  if( player.opponent.ready ) this.play();
+}
+
 function addScreen( socket ) {
   console.log( 'screen added' );
-  var screen = this.screen[ socket.id ] = socket;
+  this.screens[ socket.id ] = socket;
   this.room.emit( 'screen joined' );
 }
 

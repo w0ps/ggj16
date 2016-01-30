@@ -8,4 +8,16 @@ function init(){
 	localStorage.playerName = playerName;
 
 	socket.emit( 'controller joined', playerName );
+
+	socket.on( 'ready?', areYouReady );
+
+	socket.on( 'play', showPlay );
+}
+
+function areYouReady( customMessage ) {
+	if( prompt( customMessage || 'are you ready?' ) ) socket.emit( 'ready' );
+}
+
+function showPlay() {
+	console.log( 'play' );
 }
