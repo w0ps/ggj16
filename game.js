@@ -84,36 +84,16 @@ function tickPlayer( playerId, players, updateInfo ) {
 			fieldResources = player.fieldResources,
 			enemies = player.opponent.mobs,
 			info = updateInfo[ playerId ] = {
-				died: [],
-				damaged: [],
-				fighting: [],
-				looted: []
+				mobs: {},
+				resources: {},
+				fieldResources: {},
+				spells: {}
 			};
 
-	mobs.forEach( _.partial( mobTick, _, this, player, enemies, fieldResources, player.opponent, info ) );
+	mobs.forEach( _.partial( mobTick, _, _, _, this, player, enemies, fieldResources, player.opponent, info ) );
 }
 
-function finishTurn( playerId, players, info ) {
-	var player = players[ playerId ],
-			mobs = player.mobs,
-			mob, i = 1;
-	
-	while( mobs[ mobs.length - 1 ].dead ) mobs.pop();
-
-	while( mobs[ mobs.length - i ].damage ) {
-		mob = mobs[ mobs.length - i ];
-		info.damaged.push( { id: mob.id, damage: mob.damage } );
-		++i;
-	}
-
-	i = 0;
-	while( !mobs[ mobs.length - i ].moving ) {
-		info.fighting.push( { id: mob.id } );
-		++i;
-	}
-}
-
-function mobTick( mob, game, player, enemies, fieldResources, opponent, info ) {
+function mobTick( mob, index, mobs, game, player, enemies, fieldResources, opponent, info ) {
 	var stats = mobStats[ mob.type ],
 			range = stats.range,
 			mobPosition = mob.position,
@@ -122,16 +102,22 @@ function mobTick( mob, game, player, enemies, fieldResources, opponent, info ) {
 			closestEnemyDistance = closestEnemyPosition ? Math.abs( mobPosition - closestEnemyPosition ) : null,
 			closestResource = resources[ 0 ],
 			closestResourceDistance = closestResource ? Math.abs( mobPosition - closestResource.position ) : null,
-			damageDealt;
-
-	mob.moving = false;
+			damageDealt, value, i;
 
 	if( closestEnemyDistance <= range ) {
-		closestEnemy.damage += stats.strength * player.strengthModifier;
-		if( closestEnemy.damage >= mobStats[ closestEnemy.type ].health ) {
-			closestEnemy.dead = true;
-			info.died.push( { id: mobId } );
-			player.resources[ 2 ] += mobStats[ mob.type ].value;
+		damageDealt = stats.strength * player.strengthModifier;
+		closestEnemy.damage += damageDealt;
+		( mobInfo = info.mobs[ mob.id ] = info.mobs[ mob.id ] || {} ).fighting = true;
+		mobInfo.damaged = mobInfo.damaged || 0;
+		mobInfo.damaged += damageDealt;
+
+		if( closestEnemy.health <= 0 ) {
+			closestEnemy.dead = mobInfo.died = true;
+
+			// reward soul value
+			value = mobStats[ mob.type ] * player.valueModifier;
+			player.resources[ 2 ] += value;
+			info.resources[ 2 ] += value;
 		}
 	}
 	else if( closestResourceDistance <= range ) {
@@ -145,7 +131,21 @@ function mobTick( mob, game, player, enemies, fieldResources, opponent, info ) {
 	}
 	else {
 		mob.position = stats.speed * player.speedModifier * player.direction;
+		i = index;
+		
+		// check if it passes next mobs and swap it
+		while ( Math.sign( mob.position - mobs[ i + 1 ].position ) === player.direction ) {
+			mobs[ i ] = mobs[ i + 1 ];
+			mobs[ i + 1 ] = mob;
+			i++;
+		}
 	}
+}
+
+function finishTurn( playerId, players, info ) {
+	var mobs = players[ playerId ].mobs;
+	
+	while( mobs[ mobs.length - 1 ].dead ) mobs.pop();
 }
 
 function summon( socket, gesture ) {
@@ -154,7 +154,7 @@ function summon( socket, gesture ) {
 			mobType = player.direction > 0 ? gesturesDark.indexOf( gesture ) : gesturesLight.indexOf( gesture ),
 			isMob = mobType > -1,
 			spellName = isMob && spellNamesByGesture[ gesture ],
-			cost = isMob ? mobStats[ mobType ].cost : spells[ spellName ].cost,
+			cost = ( isMob ? mobStats[ mobType ].cost : spells[ spellName ].cost ) * ( player.costModifier || 1 ),
 			cantAfford = false;
 
 	cost.forEach( evaluateResouces );
@@ -163,7 +163,7 @@ function summon( socket, gesture ) {
 
 	cost.forEach( spendResource );
 
-	if( isMob ) player.mobs.unshift( new Mob( mobType, player.direction > 0 ? 0 : 1000 ) );
+	if( isMob ) player.mobs.unshift( new Mob( mobType, mobStats[ mobType ], player.direction > 0 ? 0 : 1000 ) );
 	else spells[ spellName ].cast( player );
 
 	return;
