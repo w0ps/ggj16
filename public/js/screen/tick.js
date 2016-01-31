@@ -13,8 +13,8 @@ function tick( updateData ) {
 
   fg.clearRect( 0, 0, width, height );
 
-  Object.keys( mobs ).forEach( tickAndDrawMob );
   Object.keys( fieldResources ).forEach( drawFieldResource );
+  Object.keys( mobs ).forEach( tickAndDrawMob );
 
   function updatePlayerAssets( playerId ) {
     var playerData = updateData[ playerId ],
@@ -98,6 +98,34 @@ function tick( updateData ) {
     //console.log( 'updatefun', updateData[ playerId ] );
   }
 
+  function drawFieldResource( resourceId ) {
+    var fResource = fieldResources[ resourceId ],
+        row;
+    x = ( fResource.position / tweakables.maxDistance ) * width;
+
+    // fg.beginPath();
+    // fg.arc( x, 100, 5, 0, 2*Math.PI, false );
+    // fg.fillStyle = 'black';
+    // fg.fill();
+
+    var spriteColumn = fResource.type + ( fResource.direction === -1 ? 1 : 0 );
+
+    if( fResource.died ) {
+      delete fieldResources[ resourceId ];
+      row = 2;
+      drawSprite( bg, base64Sprites.fieldResources, spriteColumn, row, 64, 64, 8, x, baseline * devicePixelRatio );
+    } else {
+      if( fResource.firstFrame ) {
+        row = 1;
+        fResource.firstFrame = false;
+      } else {
+        row = 0;
+        fResource.firstFrame = true;
+      }
+      drawSprite( fg, base64Sprites.fieldResources, spriteColumn, row, 64, 64, 8, x, baseline * devicePixelRatio );
+    }
+  }
+
   function tickAndDrawMob( mobId ) {
     var mob = mobs[ mobId ],
         speed = mob.speed * mob.player.modifiers.speed,
@@ -132,34 +160,6 @@ function tick( updateData ) {
       }
 
       drawSprite( fg, sprite, mob.type, row, 64, 64, 8, x, baseline * devicePixelRatio );
-    }
-  }
-
-  function drawFieldResource( resourceId ) {
-    var fResource = fieldResources[ resourceId ],
-        row;
-    x = ( fResource.position / tweakables.maxDistance ) * width;
-
-    // fg.beginPath();
-    // fg.arc( x, 100, 5, 0, 2*Math.PI, false );
-    // fg.fillStyle = 'black';
-    // fg.fill();
-
-    var spriteColumn = fResource.type + ( fResource.direction === -1 ? 1 : 0 );
-
-    if( fResource.died ) {
-      delete fieldResources[ resourceId ];
-      row = 2;
-      drawSprite( bg, base64Sprites.fieldResources, spriteColumn, row, 64, 64, 8, x, baseline * devicePixelRatio );
-    } else {
-      if( fResource.firstFrame ) {
-        row = 1;
-        fResource.firstFrame = false;
-      } else {
-        row = 0;
-        fResource.firstFrame = true;
-      }
-      drawSprite( fg, base64Sprites.fieldResources, spriteColumn, row, 64, 64, 8, x, baseline * devicePixelRatio );
     }
   }
 }
