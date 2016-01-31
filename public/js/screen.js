@@ -40,7 +40,9 @@ function tick( updateData ) {
         direction = player.direction,
         updatedMobs = playerData.mobs,
         updatedModifiers = playerData.modifiers,
-        updatedFieldResources = playerData.fieldResources;
+        updatedFieldResources = playerData.fieldResources,
+        sounds = tweakables.sounds,
+        playerType = tweakables.playerNames[ player.direction ];
 
     if( updatedMobs ) Object.keys( updatedMobs ).forEach( updateMob );
     if( updatedModifiers ) Object.keys( updatedModifiers ).forEach( applyModifier );
@@ -52,7 +54,8 @@ function tick( updateData ) {
 
     function updateMob( mobId ) {
       var mob = updatedMobs[ mobId ],
-          gameMob = game.mobs[ mobId ];
+          gameMob = game.mobs[ mobId ],
+          possibleSound;
 
       if( mob.created ) {
         if( gameMob ) console.log( 'weird this id already exists' );
@@ -61,8 +64,12 @@ function tick( updateData ) {
         gameMob.direction = direction;
         gameMob.speed = mobStats[ mob.type ].speed;
         gameMob.player = player;
+        
+        possibleSound = getPossibleSound( 'spawns' );
+
       } else if( mob.died ){
         gameMob.died = true;
+        possibleSound = getPossibleSound( 'dies' );
       } else if( mob.finished ) {
         delete game.mobs[ mobId ];
       } else {
@@ -72,6 +79,8 @@ function tick( updateData ) {
         if( mob.fighting ) {
           gameMob.fighting = true;
           gameMob.speed = 0;
+          possibleSound = getPossibleSound( 'strikes' );
+
         } else if( mob.fighting === false ) {
           gameMob.speed = mobStats[ gameMob.type ].speed;
           delete gameMob.fighting;
@@ -80,6 +89,13 @@ function tick( updateData ) {
         function copyProperty( property ) {
           gameMob[ property ] = mob[ property ];
         }
+      }
+
+      if( possibleSound ) return possibleSound.play();
+
+      function getPossibleSound ( action ) {
+        var mobSounds = sounds.mobs[ playerType ][ gameMob.type ];
+        return mobSounds && mobSounds[ action ];
       }
     }
 
@@ -90,7 +106,10 @@ function tick( updateData ) {
     function updateFieldResource( fieldResourceId ) {
       var fieldResource = fieldResources[ fieldResourceId ],
           updatedFieldResource = updatedFieldResources[ fieldResourceId ];
-      if( updatedFieldResource.died ) fieldResource.died = true;
+      if( updatedFieldResource.died ) {
+        fieldResource.died = true;
+        sounds.fieldResources[ playerType ][ fieldResource.type ].play()
+      }
     }
 
     //console.log( 'updatefun', updateData[ playerId ] );
