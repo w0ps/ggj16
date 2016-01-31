@@ -149,7 +149,9 @@ function confirmPause( customMsg ) {
 
 function victory( playerId ) {
   var updates = document.getElementById('updates');
-  updates.innerHTML = playerId == socket.nsp + '#' + socket.id ? tweakables.controllerVictoryTexts[0] : tweakables.controllerDefeatTexts[0];
+  updates.innerHTML = (playerId == socket.nsp + '#' + socket.id ? 
+            tweakables.controllerDefeatTexts[Math.floor(Math.random()*tweakables.controllerDefeatTexts.length)] : 
+            tweakables.controllerVictoryTexts[Math.floor(Math.random()*tweakables.controllerVictoryTexts.length)]);
 }
 
 function pause() {
@@ -265,9 +267,8 @@ function getScrollY() {
       _g.clearRect(0, 0, _rc.width, _rc.height);
     _points.length = 1; // clear
     _points[0] = new Point(x, y);
-    console.log("Recording unistroke...");
-    _g.fillStyle = "rgb(138,7,7)";
-    _g.strokeStyle = "rgb(138,7,7)";
+    _g.fillStyle = tweakables.playerColors[player.direction];
+    _g.strokeStyle = tweakables.playerColors[player.direction];
     _g.lineWidth = 5;
     _g.fillRect(x - 4, y - 3, 9, 9);
   }
