@@ -286,8 +286,8 @@ function getScrollY() {
   }
 
   function touchEndEvent() {
-    x = lastX;
-    y = lastY;
+    x = lastX === undefined ? 0 : lastX;
+    y = lastY === undefined ? 0 : lastY;
     document.onselectstart = function() { return true; } // enable drag-select
     document.onmousedown = function() { return true; } // enable drag-select
     if (_isDown) {
