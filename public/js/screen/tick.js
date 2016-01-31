@@ -53,6 +53,7 @@ function tick( updateData ) {
         gameMob.died = true;
         possibleSound = getPossibleSound( 'dies' );
       } else if( mob.finished ) {
+        tweakables.sounds.other[ tweakables.playerNames[ direction * -1 ] + 'Hurts' ].play();
         delete game.mobs[ mobId ];
       } else {
         gameMob = game.mobs[ mobId ];

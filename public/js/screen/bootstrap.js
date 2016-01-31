@@ -107,7 +107,7 @@ function pause() {
 function handleVictory( socketId ) {
   console.log( 'victory!' + socketId );
   var playerType = tweakables.playerNames[ game.players[ socketId ].direction ];
-  sounds.other[ playerType + 'Wins' ].play();
+  tweakables.sounds.other[ playerType + 'Wins' ].play();
 }
 
 var gotGamestate;
@@ -123,6 +123,7 @@ function loadGameState( data ) {
         assets = data[ id ],
         mobs = assets.mobs,
         fieldResources = assets.fieldResources;
+        life = assets.life;
 
     Object.keys( mobs ).forEach( fixMob );
     Object.keys( fieldResources ).forEach( fixResource );
