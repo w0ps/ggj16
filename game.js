@@ -98,7 +98,7 @@ function play() {
   Object.keys( this.players ).forEach( function( id, i ) {
     var player = game.players[ id ];
     
-    if( !i ) game.summon( { id }, player.direction > 0 ? 'inverted pentagram' : 'pentagram' );
+    if( !i ) game.summon( { id }, player.direction > 0 ? 'hound' : 'staff' );
     //player.fieldResources.push( new Resource( 0, resourceStats[ 0 ], player.direction > 0 ? 10 : tweakables.maxDistance - 10 ) );
     //game.summon( { id }, 'square' );
   } );
@@ -162,6 +162,7 @@ function tick() {
 }
 
 function tickPlayer( playerId, players ) {
+  players[playerId].update.resources[ 0 ] = players[ playerId ].resources[ 0 ] += 1;
   players[ playerId ].mobs.forEach( _.partial( mobTick, _, _, _, this, players[ playerId ] ) );
 }
 
