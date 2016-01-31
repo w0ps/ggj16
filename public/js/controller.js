@@ -152,8 +152,8 @@ function confirmPause( customMsg ) {
 function victory( playerId ) {
   var updates = document.getElementById('updates');
   updates.innerHTML = (playerId == socket.nsp + '#' + socket.id ? 
-            tweakables.controllerDefeatTexts[Math.floor(Math.random()*tweakables.controllerDefeatTexts.length)] : 
-            tweakables.controllerVictoryTexts[Math.floor(Math.random()*tweakables.controllerVictoryTexts.length)]);
+            tweakables.controllerVictoryTexts[Math.floor(Math.random()*tweakables.controllerVictoryTexts.length)] : 
+            tweakables.controllerDefeatTexts[Math.floor(Math.random()*tweakables.controllerDefeatTexts.length)]);
 }
 
 function pause() {
