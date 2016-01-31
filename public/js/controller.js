@@ -11,7 +11,8 @@ socketHandlers = {
   'play': showPlay,
   'requestPause': confirmPause,
   'paused': pause,
-  'update': update
+  'update': update,
+  'victory': victory
 };
 
 var players = {}, 
@@ -128,6 +129,11 @@ function confirmPause( customMsg ) {
   if( confirm( customMsg || 'do you agree to pause the game?' ) ) socket.emit( 'confirm pause' );
 }
 
+function victory( playerId ) {
+  console.log('VICTORY PLAYERID BITCHES ##################');
+  console.log(playerId == socket.nsp + '#' + socket.id ? controllerVictoryTexts[0] : controllerDefeatTexts[0]);
+}
+
 function pause() {
   console.log( 'pause...' );
 }
@@ -161,8 +167,10 @@ function update( data ) {
       for (mob in mobs) {
         if (mobs[mob].finished && playerId !== socketId) {
           fullHealth = health.getElementsByClassName('full_health')[0];
-          fullHealth.src = '/img/empty_health.png';
-          fullHealth.className = 'empty_health';
+          if (fullHealth !== undefined) {
+            fullHealth.src = '/img/empty_health.png';
+            fullHealth.className = 'empty_health';
+          }
         }  
       }
     }
