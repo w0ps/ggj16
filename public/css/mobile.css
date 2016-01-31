@@ -33,6 +33,19 @@ canvas {
     display: block;
     width: auto;
     height: 100%;
+    display: none;
+}
+.preview.dark #light {
+    display: none;
+}
+.preview.dark #dark {
+    display: block !important;
+}
+.preview.light #dark {
+    display: none;
+}
+.preview.light #light {
+    display: block !important;
 }
 .resources {
     display: flex;

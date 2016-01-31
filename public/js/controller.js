@@ -74,12 +74,16 @@ function playerReceived( playerData ) {
 }
 
 function playerJoined( playerData ) {
+  var gestureContainer = document.getElementsByClassName('preview')[0],
+      playerSide;
   if (playerData.id == socket.nsp + '#' + socket.id) {
     player = playerData;
     updateViewResources( playerData.resources );
     if (_r === undefined) {
       updateSettings( tweakables.playerNames[playerData.direction] );
       createPatternRecognizer( tweakables.playerGestures[playerData.direction] );
+      playerSide = playerData.direction == 1 ? 'dark' : 'light';
+      gestureContainer.className += ' ' + playerSide;
     }
   }
 }
