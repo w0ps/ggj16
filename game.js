@@ -92,17 +92,6 @@ function play() {
   if( !this.started ) this.createFieldResources();
   this.started = this.running = true;
 
-  // bootstrap some content in
-  var game = this;
-  
-  Object.keys( this.players ).forEach( function( id, i ) {
-    var player = game.players[ id ];
-    
-    if( !i ) game.summon( { id }, player.direction > 0 ? 'hound' : 'staff' );
-    //player.fieldResources.push( new Resource( 0, resourceStats[ 0 ], player.direction > 0 ? 10 : tweakables.maxDistance - 10 ) );
-    //game.summon( { id }, 'square' );
-  } );
-
   this.tick();
 }
 
@@ -156,13 +145,14 @@ function tick() {
   this.playerKeys.forEach( _.partial( tickPlayer, _, this.players ) );
   this.playerKeys.forEach( _.partial( finishTurn, _, this.players, globalInfo ) );
 
-  console.log( JSON.stringify( globalInfo, null, 2 ) );
-
   this.room.emit( 'update', globalInfo );
 }
 
 function tickPlayer( playerId, players ) {
-  players[playerId].update.resources[ 0 ] = players[ playerId ].resources[ 0 ] += 1;
+  if( tweakables.resourceCaps[ 0 ] && players[ playerId ].resources[ 0 ] < tweakables.resourceCaps[ 0 ] ) {
+    players[playerId].update.resources[ 0 ] = players[ playerId ].resources[ 0 ] += 1;
+  }
+
   players[ playerId ].mobs.forEach( _.partial( mobTick, _, _, _, this, players[ playerId ] ) );
 }
 
@@ -189,7 +179,7 @@ function mobTick( mob, index, mobs, game, player ) {
 
   if( closestEnemyInRange ) {
     mob.speed = 0;
-    damageDealt = stats.strength * modifiers.strength;
+    damageDealt = Math.random() * stats.strength * modifiers.strength;
     closestEnemy.health -= damageDealt;
     mobInfo.fighting = true;
     console.log( 'fighting other mob' );

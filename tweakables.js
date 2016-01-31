@@ -94,6 +94,7 @@ module.exports = {
     },
     playerLife: 10,
     startingResources: [ 50, 10, 0, 0 ],
+    resourceCaps: [ 100, 0, 0, 0 ],
     maxDistance: 100, //1000
     tickDelay: 1000 / 5,
     spriteWidth: 64,
