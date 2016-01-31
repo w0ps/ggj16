@@ -12,7 +12,8 @@ socketHandlers = {
   'requestPause': confirmPause,
   'paused': pause,
   'update': update,
-  'victory': victory
+  'victory': victory,
+  'cannot afford': cannotAfford
 };
 
 var players = {}, 
@@ -128,14 +129,22 @@ function askPause() {
   socket.emit( 'request pause' );
 }
 
+function cannotAfford() {
+  var updates = document.getElementById('updates');
+  updates.innerHTML = 'Not enough resources';
+  setTimeout(function() {
+    updates.innerHTML = '';
+  }, 1000);
+}
+
 function confirmPause( customMsg ) {
   console.log ( 'Confirm pause' );
   if( confirm( customMsg || 'do you agree to pause the game?' ) ) socket.emit( 'confirm pause' );
 }
 
 function victory( playerId ) {
-  console.log('VICTORY PLAYERID BITCHES ##################');
-  console.log(playerId == socket.nsp + '#' + socket.id ? controllerVictoryTexts[0] : controllerDefeatTexts[0]);
+  var updates = document.getElementById('updates');
+  updates.innerHTML = playerId == socket.nsp + '#' + socket.id ? controllerVictoryTexts[0] : controllerDefeatTexts[0];
 }
 
 function pause() {
@@ -280,7 +289,7 @@ function getScrollY() {
       if (_points.length >= 10) {
         var result = _r.Recognize(_points, false);
             console.log(result);
-            if (result.Score*100 >= 50) { // accurate
+            if (result.Score*100 >= 20) { // accurate
               console.log("Summon: " + result.Name)
               summon(result.Name);
             }

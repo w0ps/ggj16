@@ -106,8 +106,16 @@ canvas {
     display: inline-block;
 }
 
-#settings p:nth-child(2) {
+#settings p:nth-child(2), #settings p:nth-child(3) {
     border-right: 2px solid #000;
     padding-right: 10px;
     margin-right: 10px;
+}
+
+#settings p:nth-child(3) {
+    border: none;
+}
+
+#pause {
+    display: none !important;
 }
