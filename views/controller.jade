@@ -23,15 +23,18 @@ append header
     link( rel='stylesheet' type='text/css' href='/css/mobile.css' )
 
 block content
+    img#splash( src='../img/splash.jpg' )
     canvas#gesture
         span The &lt;canvas&gt; element is not supported by this browser.
     #settings
       img#pause( src='../img/pause.png' )
       p#name
       p#playerSide
+      p#updates
     #stats
       .preview
-        img(src='/img/penta.png')
+        img#dark(src='/sprites/gestures-dark.png')
+        img#light(src='/sprites/gestures-light.png')
       .resources
         span
           span#resource_0
@@ -48,4 +51,4 @@ block content
     #health
       each val in [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
         span.wrapper
-          img(src='/img/full_health.png')
+          img.full_health(src='/img/full_health.png')
