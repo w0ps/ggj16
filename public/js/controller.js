@@ -140,7 +140,7 @@ function cannotAfford( playerId ) {
     updates.innerHTML = 'Not enough resources';
     setTimeout(function() {
       updates.innerHTML = '';
-    }, 1000000);  
+    }, 1000);  
   }
 }
 
