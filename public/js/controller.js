@@ -20,6 +20,11 @@ var players = {},
     player;
 
 function initCallback() {
+  // Hide the splash screen after 3 seconds
+  setTimeout(function() {
+    var playerNameContainer = document.getElementById('splash').style.display = 'none';
+  }, 3000);
+
   // Connect to the socket
   socket = io( '/' + gameId );
 
