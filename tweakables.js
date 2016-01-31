@@ -82,7 +82,7 @@ module.exports = {
       '-1': 'blue',
       '1': 'red'
     },
-    playerLife: 15,
+    playerLife: 10,
     startingResources: [ 100, 100, 100, 100 ],
     maxDistance: 100, //1000
     tickDelay: 1000 / 5,
