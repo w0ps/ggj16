@@ -51,7 +51,7 @@ function customLoadSounds( soundCollection, cb ) {
 
       function loadOrStore( name, i ) {
         if( soundsByName[ name ] ) {
-          set.dark[ i ] = soundsByName[ name ];
+          set[ side ][ i ] = soundsByName[ name ];
         } else soundsToLoad.push( name );
       }
     }

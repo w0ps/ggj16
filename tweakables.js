@@ -141,11 +141,8 @@ module.exports = {
     ],
     sounds: {
       fieldResources: {
-        dark: [
-          'goat'//,
-          //woman scream
-        ]//,
-        //light
+        dark: [ 'goat' /*woman scream */ ],
+        light: [ 'magic-wand-glitter' ]
       },
       mobs: {
         dark: [
