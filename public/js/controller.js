@@ -149,7 +149,9 @@ function confirmPause( customMsg ) {
 
 function victory( playerId ) {
   var updates = document.getElementById('updates');
-  updates.innerHTML = playerId == socket.nsp + '#' + socket.id ? tweakables.controllerDefeatTexts[0] : tweakables.controllerVictoryTexts[0];
+  updates.innerHTML = (playerId == socket.nsp + '#' + socket.id ? 
+            tweakables.controllerDefeatTexts[Math.floor(Math.random()*tweakables.controllerDefeatTexts.length)] : 
+            tweakables.controllerVictoryTexts[Math.floor(Math.random()*tweakables.controllerVictoryTexts.length)]);
 }
 
 function pause() {

@@ -6,7 +6,7 @@ module.exports = {
         health: 1.25,
         range: 1.5,
         value: 1,
-        cost: [ 10, 0, 0, 0 ]
+        cost: [ 25, 0, 0, 0 ]
       },
       { // satyr or faun
         speed: 1,
@@ -14,7 +14,7 @@ module.exports = {
         health: 1,
         range: 1,
         value: 1,
-        cost: [ 1, 0, 0, 0 ]
+        cost: [ 0, 2, 0, 0 ]
       },
       { // vampire or elf
         speed: 1.2,
@@ -22,7 +22,7 @@ module.exports = {
         health: 2,
         range: 1.2,
         value: 2,
-        cost: [ 0, 1, 0, 0 ]
+        cost: [ 0, 0, 5, 0 ]
       },
       { // succubus or unicorn
         speed: 0.9,
@@ -30,7 +30,7 @@ module.exports = {
         health: 3,
         range: 3,
         value: 5,
-        cost: [ 0, 1, 1, 0 ]
+        cost: [ 10, , 5, 0 ]
       },
       { // orc of tree person
         speed: 0.7,
@@ -38,14 +38,14 @@ module.exports = {
         health: 3,
         range: 1,
         value: 8,
-        cost: [ 0, 1, 1, 0 ]
+        cost: [ 10, 0, 5, 0 ]
       },
       { // baal or gaia
         speed: 0.4,
         strength: 10,
         health: 50,
         range: 2,
-        cost: [ 0, 0, 0, 5 ]
+        cost: [ 25, 0, 0, 5 ]
       }
     ],
     gesturesDark: [
@@ -93,7 +93,7 @@ module.exports = {
       '1': 'red'
     },
     playerLife: 10,
-    startingResources: [ 100, 100, 100, 100 ],
+    startingResources: [ 50, 10, 0, 0 ],
     maxDistance: 100, //1000
     tickDelay: 1000 / 5,
     spriteWidth: 64,
