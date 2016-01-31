@@ -155,13 +155,15 @@ function update( data ) {
     }
 
     function updateMobs( mobs ) {
-      console.log(mobs);
-      // mobs.forEach( updateMob );
-    }
-
-    function updateMob( mob ) {
-      if (mob.finished && playerId == socket.nsp + '#' + socket.id) {
-        alert('Lose health');
+      var mob, fullHealth,
+          socketId = socket.nsp + '#' + socket.id,
+          healthContainer = document.getElementById('health');
+      for (mob in mobs) {
+        if (mobs[mob].finished && playerId !== socketId) {
+          fullHealth = health.getElementsByClassName('full_health')[0];
+          fullHealth.src = '/img/empty_health.png';
+          fullHealth.className = 'empty_health';
+        }  
       }
     }
 
