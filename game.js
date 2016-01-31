@@ -179,7 +179,7 @@ function mobTick( mob, index, mobs, game, player ) {
 
   if( closestEnemyInRange ) {
     mob.speed = 0;
-    damageDealt = stats.strength * modifiers.strength;
+    damageDealt = Math.random() * stats.strength * modifiers.strength;
     closestEnemy.health -= damageDealt;
     mobInfo.fighting = true;
     console.log( 'fighting other mob' );
