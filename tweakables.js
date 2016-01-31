@@ -104,9 +104,9 @@ module.exports = {
     },
     resourceDistribution: [
       [
-        1/10,
-        2/10,
-        3/10
+        5/10,
+        5.5/10,
+        6.6/10
       ]//,
       // [
       //   7/10,
@@ -114,7 +114,7 @@ module.exports = {
       //   9/10
       // ]
     ],
-    baseline: 484,
+    baseline: 800,
     leftTreeX: 20,
     rightTreeX: -200,
     screenVictoryTexts: {
@@ -138,5 +138,25 @@ module.exports = {
       'you suck, seriously',
       'keep on trying',
       'I am so disappointed in you'
-    ]
+    ],
+    sounds: {
+      fieldResources: {
+        dark: [ 'goat' /*woman scream */ ],
+        light: [ 'magic-wand-glitter' ]
+      },
+      mobs: {
+        dark: [
+          {
+            spawns: 'growling-dog'
+          }
+        ],
+        light: [
+          {
+            spawns: 'giggle'//,
+            // strikes,
+            // dies
+          }
+        ]
+      }
+    }
 };
