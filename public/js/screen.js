@@ -13,6 +13,7 @@ function Game() {
   this.fieldResources = {};
 
   this.contexts = setupGameView();
+  customLoadSounds( tweakables.sounds, console.log.bind( console, 'sounds loaded' ) );
 }
 
 function tick( updateData ) {

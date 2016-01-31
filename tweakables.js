@@ -138,5 +138,28 @@ module.exports = {
       'you suck, seriously',
       'keep on trying',
       'I am so disappointed in you'
-    ]
+    ],
+    sounds: {
+      fieldResources: {
+        dark: [
+          'goat'//,
+          //woman scream
+        ]//,
+        //light
+      },
+      mobs: {
+        dark: [
+          {
+            spawns: 'growling-dog'
+          }
+        ],
+        light: [
+          {
+            spawns: 'giggle'//,
+            // strikes,
+            // dies
+          }
+        ]
+      }
+    }
 };
