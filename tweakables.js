@@ -122,7 +122,7 @@ module.exports = {
       ]
     },
     playerColors: {
-      '-1': 'rgb(34,118,172)',
+      '-1': 'rgb(208,234,242)',
       '1': 'rgb(138,7,7)'
     },
     resourceDistribution: [
