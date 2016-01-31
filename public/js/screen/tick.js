@@ -109,7 +109,7 @@ function tick( updateData ) {
     x = ( mob.position / tweakables.maxDistance ) * width;
 
     if( mob.died ) {
-      drawSprite( bg, sprite, mob.type, 4, 64, 64, 8, x, baseline );
+      drawSprite( bg, sprite, mob.type, 4, 64, 64, 8, x, baseline * devicePixelRatio );
       delete mobs[ mobId ];
     } else {
       if( mob.speed ){
@@ -131,7 +131,7 @@ function tick( updateData ) {
         }
       }
 
-      drawSprite( fg, sprite, mob.type, row, 64, 64, 8, x, baseline );
+      drawSprite( fg, sprite, mob.type, row, 64, 64, 8, x, baseline * devicePixelRatio );
     }
   }
 
@@ -150,7 +150,7 @@ function tick( updateData ) {
     if( fResource.died ) {
       delete fieldResources[ resourceId ];
       row = 2;
-      drawSprite( bg, base64Sprites.fieldResources, spriteColumn, row, 64, 64, 8, x, baseline );
+      drawSprite( bg, base64Sprites.fieldResources, spriteColumn, row, 64, 64, 8, x, baseline * devicePixelRatio );
     } else {
       if( fResource.firstFrame ) {
         row = 1;
@@ -159,7 +159,7 @@ function tick( updateData ) {
         row = 0;
         fResource.firstFrame = true;
       }
-      drawSprite( fg, base64Sprites.fieldResources, spriteColumn, row, 64, 64, 8, x, baseline );
+      drawSprite( fg, base64Sprites.fieldResources, spriteColumn, row, 64, 64, 8, x, baseline * devicePixelRatio );
     }
   }
 }

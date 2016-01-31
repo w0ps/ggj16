@@ -87,8 +87,8 @@ function setupGameView() {
 
   bg.drawImage( base64Sprites.background, 0, 0, width, height, 0, 0, width * devicePixelRatio, height * devicePixelRatio );
 
-  bg.drawImage( base64Sprites.treeDark, 0, 0, 128, 128, tweakables.leftTreeX * devicePixelRatio, tweakables.baseline - 200, 128 * devicePixelRatio, 128 * devicePixelRatio);
-  bg.drawImage( base64Sprites.treeLight, 0, 0, 128, 128, ( width + tweakables.rightTreeX ) * devicePixelRatio, tweakables.baseline - 200, 128 * devicePixelRatio, 128 * devicePixelRatio );
+  bg.drawImage( base64Sprites.treeDark, 0, 0, 128, 128, tweakables.leftTreeX * devicePixelRatio, ( tweakables.baseline - 200 ) * devicePixelRatio, 128 * devicePixelRatio, 128 * devicePixelRatio);
+  bg.drawImage( base64Sprites.treeLight, 0, 0, 128, 128, ( width + tweakables.rightTreeX ) * devicePixelRatio, ( tweakables.baseline - 200 ) * devicePixelRatio, 128 * devicePixelRatio, 128 * devicePixelRatio );
 
   return api;
 }
