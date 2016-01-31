@@ -254,7 +254,6 @@ var sounds = {
   loadHandler: function () {
     var self = this;
     self.loaded += 1;
-    console.log(self.loaded);
 
     //Check whether everything has loaded.
     if (self.toLoad === self.loaded) {

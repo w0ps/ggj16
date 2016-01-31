@@ -34,8 +34,7 @@ function inflictDamage() {
 
 function die(){
 	this.dead = true;
-	console.log( 'died!!!' );
-	this.game.finish( this.socket.id );
+	this.game.finish( this.opponent.socket.id );
 }
 
 module.exports = Player;

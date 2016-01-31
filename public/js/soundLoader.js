@@ -18,7 +18,6 @@ function customLoadSounds( soundCollection, cb ) {
     function registerNamedSound( name ) {
       var refName = formatSoundUrl( name );
 
-      console.log( refName );
       soundsByName[ name ] = sounds[ refName ];
     }
 
@@ -40,7 +39,7 @@ function customLoadSounds( soundCollection, cb ) {
       return [ 'light', 'dark' ].forEach( addMobCollection );
     }
 
-    if( collectionName === 'otherSounds' ) {
+    if( collectionName === 'other' ) {
       return Object.keys( set ).forEach( loadOrStoreOtherSound );
     }
 
@@ -70,8 +69,9 @@ function customLoadSounds( soundCollection, cb ) {
     }
 
     function loadOrStoreOtherSound( name ) {
-      if( soundsByName[ name ] ) set[ name ] = soundsByName[ name ];
-      else soundsToLoad.push( name );
+      var soundName = set[ name ];
+      if( soundsByName[ soundName ] ) set[ name ] = soundsByName[ soundName ];
+      else soundsToLoad.push( soundName );
     }
 
   }

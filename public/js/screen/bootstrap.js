@@ -95,15 +95,19 @@ function setupGameView() {
 
 function play() {
   console.log( 'playing' );
-  if( !gotGamestate) socket.emit( 'request gamestate' );
+  tweakables.sounds.other.start.play();
+  if( !gotGamestate ) socket.emit( 'request gamestate' );
 }
 
 function pause() {
+  tweakables.sounds.other.snare.play();
   console.log( 'pausing' );
 }
 
 function handleVictory( socketId ) {
   console.log( 'victory!' + socketId );
+  var playerType = tweakables.playerNames[ game.players[ socketId ].direction ];
+  sounds.other[ playerType + 'Wins' ].play();
 }
 
 var gotGamestate;
