@@ -33,18 +33,16 @@ function customLoadSounds( soundCollection, cb ) {
     var set = soundCollection[ collectionName ];
 
     if( collectionName === 'fieldResources' ) {
-      [ 'light', 'dark' ].forEach( loadResourceSounds );
-
-      return;
+      return [ 'light', 'dark' ].forEach( loadResourceSounds );
     }
 
     if( collectionName === 'mobs' ) {
-      [ 'light', 'dark' ].forEach( addMobCollection );
-
-      return;
+      return [ 'light', 'dark' ].forEach( addMobCollection );
     }
 
-    return;
+    if( collectionName === 'otherSounds' ) {
+      return Object.keys( set ).forEach( loadOrStoreOtherSound );
+    }
 
     function loadResourceSounds( side ) {
       return set[ side ] && set[ side ].forEach( loadOrStore );
@@ -69,6 +67,11 @@ function customLoadSounds( soundCollection, cb ) {
           }
         }
       }
+    }
+
+    function loadOrStoreOtherSound( name ) {
+      if( soundsByName[ name ] ) set[ name ] = soundsByName[ name ];
+      else soundsToLoad.push( name );
     }
 
   }

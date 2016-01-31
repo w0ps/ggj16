@@ -159,6 +159,14 @@ module.exports = {
       'I am so disappointed in you'
     ],
     sounds: {
+      otherSounds: {
+        darkWins: 'boding',
+        lightWins: 'swish',
+        darkHurts: 'grunt',
+        lightHurts: 'snap',
+        start: 'horn',
+        snare: 'snare'
+      },
       fieldResources: {
         dark: [ 'goat' /*woman scream */ ],
         light: [ 'magic-wand-glitter' ]
