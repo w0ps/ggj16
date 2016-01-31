@@ -167,54 +167,65 @@ module.exports = {
         dark: [
           { // hellhound
             spawns: 'growling-dog',
-            strikes: 'tear-flesh'
+            strikes: 'tear-flesh',
+            dies: 'yelp'
           },
           { // satyr/faun
             spawns: 'growl',
-            strikes: 'punch'
+            strikes: 'punch',
+            dies: 'groan2'
           },
           { // vampire
             spawns: 'vampire-hiss',
-            strikes: 'knife-tire'
+            strikes: 'knife-tire',
+            dies: 'shriek'
           },
           { // succubus
             spawns: 'cackle',
-            strikes: 'hiss'
+            strikes: 'hiss',
+            dies: 'screech'
           },
           { // orc
             spawns: 'dragon-growl',
-            strikes: 'thud'
+            strikes: 'thud',
+            dies: 'gurgle'
           },
           { // baal
             spawns: 'pandemonium',
-            strikes: 'explosion'
+            strikes: 'explosion',
+            dies: 'crackle'
           }
         ],
         light: [
           { // fairy
             spawns: 'giggle',
             strikes: 'magic-smite',
-            // dies
+            dies: 'cry'
           },
           { // prophet
             spawns: 'monastery',
-            strikes: 'gong'
+            strikes: 'gong',
+            dies: 'male-pain'
           },
           { // elf
             spawns: 'whistle',
-            strikes: 'arrow-shot'
+            strikes: 'arrow-shot',
+            dies: 'owl'
           },
           { // unicorn
             spawns: 'neigh',
-            strikes: 'fusion-gun'
+            strikes: 'fusion-gun',
+            dies: 'pop'
           },
           { //tree person
             spawns: 'groan',
-            strikes: 'falling-tree'
+            strikes: 'falling-tree',
+            dies: 'collapse'
           },
           { // gaia
             spawns: 'the-swarm',
-            strikes: 'wind-gust'
+            strikes: 'wind-gust',
+            dies: 'bell'
           }
         ]
       }
