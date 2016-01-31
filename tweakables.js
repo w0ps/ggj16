@@ -166,45 +166,55 @@ module.exports = {
       mobs: {
         dark: [
           { // hellhound
-            spawns: 'growling-dog'
+            spawns: 'growling-dog',
+            strikes: 'tear-flesh'
           },
           { // satyr/faun
-            spawns: 'growl'
+            spawns: 'growl',
+            strikes: 'punch'
           },
           { // vampire
-            spawns: 'vampire-hiss'
+            spawns: 'vampire-hiss',
+            strikes: 'knife-tire'
           },
           { // succubus
-            spawns: 'cackle'
+            spawns: 'cackle',
+            strikes: 'hiss'
           },
           { // orc
-            spawns: 'dragon-growl'
+            spawns: 'dragon-growl',
+            strikes: 'thud'
           },
           { // baal
-            spawns: 'pandemonium'
+            spawns: 'pandemonium',
+            strikes: 'explosion'
           }
         ],
         light: [
           { // fairy
-            spawns: 'giggle'//,
-            // strikes,
+            spawns: 'giggle',
+            strikes: 'magic-smite',
             // dies
           },
           { // prophet
-            spawns: 'monastery'
+            spawns: 'monastery',
+            strikes: 'gong'
           },
           { // elf
-            spawns: 'whistle'
+            spawns: 'whistle',
+            strikes: 'arrow-shot'
           },
           { // unicorn
             spawns: 'neigh',
             strikes: 'fusion-gun'
           },
           { //tree person
-            spawns: 'groan'
+            spawns: 'groan',
+            strikes: 'falling-tree'
           },
           { // gaia
-            spanws: 'the-swarm'
+            spawns: 'the-swarm',
+            strikes: 'wind-gust'
           }
         ]
       }
