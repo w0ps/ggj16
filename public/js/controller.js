@@ -12,13 +12,19 @@ socketHandlers = {
   'requestPause': confirmPause,
   'paused': pause,
   'update': update,
-  'victory': victory
+  'victory': victory,
+  'cannot afford': cannotAfford
 };
 
 var players = {}, 
     player;
 
 function initCallback() {
+  // Hide the splash screen after 3 seconds
+  setTimeout(function() {
+    var playerNameContainer = document.getElementById('splash').style.display = 'none';
+  }, 3000);
+
   // Connect to the socket
   socket = io( '/' + gameId );
 
@@ -74,12 +80,16 @@ function playerReceived( playerData ) {
 }
 
 function playerJoined( playerData ) {
+  var gestureContainer = document.getElementsByClassName('preview')[0],
+      playerSide;
   if (playerData.id == socket.nsp + '#' + socket.id) {
     player = playerData;
     updateViewResources( playerData.resources );
     if (_r === undefined) {
       updateSettings( tweakables.playerNames[playerData.direction] );
       createPatternRecognizer( tweakables.playerGestures[playerData.direction] );
+      playerSide = playerData.direction == 1 ? 'dark' : 'light';
+      gestureContainer.className += ' ' + playerSide;
     }
   }
 }
@@ -124,14 +134,22 @@ function askPause() {
   socket.emit( 'request pause' );
 }
 
+function cannotAfford() {
+  var updates = document.getElementById('updates');
+  updates.innerHTML = 'Not enough resources';
+  setTimeout(function() {
+    updates.innerHTML = '';
+  }, 1000);
+}
+
 function confirmPause( customMsg ) {
   console.log ( 'Confirm pause' );
   if( confirm( customMsg || 'do you agree to pause the game?' ) ) socket.emit( 'confirm pause' );
 }
 
 function victory( playerId ) {
-  console.log('VICTORY PLAYERID BITCHES ##################');
-  console.log(playerId == socket.nsp + '#' + socket.id ? controllerVictoryTexts[0] : controllerDefeatTexts[0]);
+  var updates = document.getElementById('updates');
+  updates.innerHTML = playerId == socket.nsp + '#' + socket.id ? controllerVictoryTexts[0] : controllerDefeatTexts[0];
 }
 
 function pause() {
@@ -276,7 +294,7 @@ function getScrollY() {
       if (_points.length >= 10) {
         var result = _r.Recognize(_points, false);
             console.log(result);
-            if (result.Score*100 >= 50) { // accurate
+            if (result.Score*100 >= 20) { // accurate
               console.log("Summon: " + result.Name)
               summon(result.Name);
             }

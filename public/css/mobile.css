@@ -33,6 +33,19 @@ canvas {
     display: block;
     width: auto;
     height: 100%;
+    display: none;
+}
+.preview.dark #light {
+    display: none;
+}
+.preview.dark #dark {
+    display: block !important;
+}
+.preview.light #dark {
+    display: none;
+}
+.preview.light #light {
+    display: block !important;
 }
 .resources {
     display: flex;
@@ -93,8 +106,26 @@ canvas {
     display: inline-block;
 }
 
-#settings p:nth-child(2) {
+#settings p:nth-child(2), #settings p:nth-child(3) {
     border-right: 2px solid #000;
     padding-right: 10px;
     margin-right: 10px;
 }
+
+#settings p:nth-child(3) {
+    border: none;
+}
+
+#pause {
+    display: none !important;
+}
+
+#splash {
+    position: absolute;
+    z-index: 1000;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+    height: 100%;
