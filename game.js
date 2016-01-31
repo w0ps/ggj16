@@ -289,11 +289,11 @@ function summon( socket, gesture ) {
       cost = ( mobStats[ mobType ] || spells[ spellName ] || {} ).cost,
       cantAfford = false, newMob;
   
-  if( !cost ) return socket.emit( 'unknown gesture' );
+  if( !cost ) return this.room.emit( 'unknown gesture', socket.id );
 
   cost.forEach( evaluateResources );
 
-  if( cantAfford ) return socket.emit( 'cannot afford' );
+  if( cantAfford ) return this.room.emit( 'cannot afford', socket.id );
 
   player.update = player.update || {
     resources: []

@@ -134,12 +134,14 @@ function askPause() {
   socket.emit( 'request pause' );
 }
 
-function cannotAfford() {
-  var updates = document.getElementById('updates');
-  updates.innerHTML = 'Not enough resources';
-  setTimeout(function() {
-    updates.innerHTML = '';
-  }, 1000);
+function cannotAfford( playerId ) {
+  if (playerId === socket.nsp + '#' + socket.id) {
+    var updates = document.getElementById('updates');
+    updates.innerHTML = 'Not enough resources';
+    setTimeout(function() {
+      updates.innerHTML = '';
+    }, 1000000);  
+  }
 }
 
 function confirmPause( customMsg ) {

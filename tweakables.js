@@ -30,7 +30,7 @@ module.exports = {
         health: 3,
         range: 3,
         value: 5,
-        cost: [ 10, , 5, 0 ]
+        cost: [ 10, 0, 5, 0 ]
       },
       { // orc of tree person
         speed: 0.7,
